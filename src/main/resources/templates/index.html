@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SpringBank - Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --verde-oscuro: #2E7D32;
+            --verde-claro: #66BB6A;
+            --gris-claro: #F8F9FA;
+            --gris: #E0E0E0;
+            --texto: #1B1B1B;
+            --blanco: #FFFFFF;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: var(--gris-claro);
+            color: var(--texto);
+        }
+
+        header {
+            background-color: var(--verde-oscuro);
+            padding: 10px 20px;
+            color: var(--blanco);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        header h1 img {
+  max-height: 50px;
+  max-width: 100%;
+  height: auto;
+}
+        nav a {
+            color: var(--blanco);
+            margin-left: 20px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .container {
+            display: flex;
+            padding: 20px;
+        }
+
+        .left-panel {
+            flex: 3;
+            margin-right: 20px;
+        }
+
+        .right-panel {
+            flex: 1;
+            background-color: var(--blanco);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .card {
+            background-color: var(--blanco);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .card h2 {
+            margin-top: 0;
+        }
+
+        .card .amount {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--verde-oscuro);
+        }
+
+        .card a {
+            margin-right: 15px;
+            color: var(--verde-claro);
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .right-panel h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .right-panel a {
+            display: block;
+            color: var(--verde-oscuro);
+            text-decoration: none;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--gris);
+        }
+
+        footer {
+            background-color: var(--verde-oscuro);
+            color: var(--blanco);
+            text-align: center;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>
+        SpringBank
+    </h1>
+    <nav>
+        <a href="#">Cuentas</a>
+        <a href="#">Tarjetas</a>
+        <a href="#">Préstamos</a>
+        <a href="#">Seguros</a>
+    </nav>
+</header>
+
+<div class="container">
+    <div class="left-panel">
+        <div class="card">
+            <h2>Caja de ahorro en pesos</h2>
+            <p><strong>Número:</strong> 274-0000000/2</p>
+            <p class="amount">$ 0,00</p>
+            <a href="#">Transferir</a>
+            <a href="#">Comprar dólares</a>
+        </div>
+
+    </div>
+
+    <div class="right-panel">
+        <h3>USUARIO</h3>
+        <a href="#">Pagos</a>
+        <a href="#">Transferencias</a>
+    </div>
+</div>
+
+<footer>
+    &copy; 2025 SpringBank - Todos los derechos reservados
+</footer>
+
+</body>
+</html>
