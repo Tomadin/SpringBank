@@ -1,13 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package com.springbank.service;
 
-/**
- *
- * @author tomad
- */
+import com.springbank.dto.Request.AsignarUsuarioDTO;
+import com.springbank.entity.Usuario;
+
+
 public class UsuarioService {
+
+    Usuario crearUsuario(AsignarUsuarioDTO asignarUsuarioDTO) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
     
 }

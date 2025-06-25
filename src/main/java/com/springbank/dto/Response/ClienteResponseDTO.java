@@ -2,25 +2,26 @@
 package com.springbank.dto.Response;
 
 
-import com.springbank.dto.CuentaDTO;
-import com.springbank.dto.UsuarioDTO;
-import java.io.Serializable;
 import java.util.List;
 
 
-public class ClienteResponseDTO implements Serializable{
+public class ClienteResponseDTO{
+    private final Long id;
     private final String nombre;
     private final String apellido;
-    private final String email;
-    private final UsuarioDTO usuario;
-    private final List<CuentaDTO> cuentas;
+    private final UsuarioResponseDTO usuario;
+    private final List<Long> cuentasId;
 
-    public ClienteResponseDTO(String nombre, String apellido, String email, UsuarioDTO usuario, List<CuentaDTO> cuentas) {
+    public ClienteResponseDTO(Long id, String nombre, String apellido, UsuarioResponseDTO usuario, List<Long> cuentasId) {
+        this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
-        this.email = email;
         this.usuario = usuario;
-        this.cuentas = cuentas;
+        this.cuentasId = cuentasId;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getNombre() {
@@ -31,22 +32,15 @@ public class ClienteResponseDTO implements Serializable{
         return apellido;
     }
 
-    public String getEmail() {
-        return email;
-    }
-    
-    public UsuarioDTO getUsuario() {
+    public UsuarioResponseDTO getUsuario() {
         return usuario;
     }
 
-    public List<CuentaDTO> getCuentas() {
-        return cuentas;
+    public List<Long> getCuentasId() {
+        return cuentasId;
     }
 
-    @Override
-    public String toString() {
-        return "ClienteRequestDTO{" + "nombre=" + nombre + ", apellido=" + apellido + ", email=" + email  + ", usuario=" + usuario + ", cuentas=" + cuentas + '}';
-    }
+    
     
     
 }

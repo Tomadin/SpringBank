@@ -25,11 +25,12 @@ public class Cuenta implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true, nullable= false)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long numeroCuenta;
     @Enumerated(EnumType.STRING)
     private TipoCuenta tipoCuenta; // AHORRO, CORRIENTE
     @Column(nullable = false, precision = 15, scale= 2) //Precision= numero total de numeros que puede tener el valor, scale= numeros despues de la coma
-    private BigDecimal saldo = BigDecimal.ZERO; 
+    private BigDecimal saldo; 
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
@@ -39,14 +40,14 @@ public class Cuenta implements Serializable{
     private Long version; // Para optimistic locking
 
     public Cuenta() {
+        this.saldo = BigDecimal.ZERO;
     }
 
-    public Cuenta(Long numeroCuenta, TipoCuenta tipoCuenta, Cliente cliente, LocalDateTime fechaApertura, Long version) {
-        this.numeroCuenta = numeroCuenta;
+    public Cuenta(TipoCuenta tipoCuenta, Cliente cliente, LocalDateTime fechaApertura) {
         this.tipoCuenta = tipoCuenta;
         this.cliente = cliente;
+        this.saldo = BigDecimal.ZERO;
         this.fechaApertura = fechaApertura;
-        this.version = version;
     }
 
     public Long getId() {

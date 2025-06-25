@@ -1,13 +1,33 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package com.springbank.service;
 
-/**
- *
- * @author tomad
- */
+import com.springbank.dto.Request.AsignarCuentaDTO;
+import com.springbank.entity.Cliente;
+import com.springbank.entity.Cuenta;
+import com.springbank.repository.CuentaRepository;
+import java.time.LocalDateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
 public class CuentaService {
+    
+    @Autowired
+    CuentaRepository cuentaRepository;
+
+    public Cuenta crearCuenta(AsignarCuentaDTO cuentaDTO, Cliente cliente) {
+
+        Cuenta cuenta = new Cuenta(
+                cuentaDTO.getTipoCuenta(),
+                cliente,
+                LocalDateTime.now()
+        );
+        
+        return cuenta; //Devolvemos la cuenta
+    }
+
+    void guardarCuenta(Cuenta cuenta) {
+        cuentaRepository.save(cuenta);
+    }
     
 }
