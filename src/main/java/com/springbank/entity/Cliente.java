@@ -10,12 +10,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "clientes")
-public class Cliente {
+public class Cliente implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,13 +26,13 @@ public class Cliente {
     @Column(nullable = false)
     private String apellido;
     @Column(unique = true,nullable = false)
-    private String emmail;
+    private String email;
     @Column(unique = true,nullable = false)
     private String dni;
     
     @OneToOne //Un Cliente tiene un usuario y un usuario pertenece solo a un cliente.
     private Usuario usuario;
-    @OneToMany(mappedBy = "clientes", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<Cuenta> cuentas = new ArrayList<>();
 
     
@@ -39,12 +40,12 @@ public class Cliente {
     public Cliente() {
     }
 
-    public Cliente(String nombre, String apellido, String emmail, String dni, Usuario usuario) {
+    public Cliente(String nombre, String apellido, String email, String dni) {
         this.nombre = nombre;
         this.apellido = apellido;
-        this.emmail = emmail;
+        this.email = email;
         this.dni = dni;
-        this.usuario = usuario;
+       // this.usuario = usuario;
     }
 
     public Long getId() {
@@ -71,12 +72,12 @@ public class Cliente {
         this.apellido = apellido;
     }
 
-    public String getEmmail() {
-        return emmail;
+    public String getEmail() {
+        return email;
     }
 
-    public void setEmmail(String emmail) {
-        this.emmail = emmail;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getDni() {
@@ -105,7 +106,7 @@ public class Cliente {
 
     @Override
     public String toString() {
-        return "Cliente{" + "id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + ", emmail=" + emmail + ", dni=" + dni + ", usuario=" + usuario + ", cuentas=" + cuentas + '}';
+        return "Cliente{" + "id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + ", email=" + email + ", dni=" + dni + ", usuario=" + usuario + ", cuentas=" + cuentas + '}';
     }
     
 }

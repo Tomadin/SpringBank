@@ -13,18 +13,19 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "cuentas")
-public class Cuenta {
+public class Cuenta implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true, nullable= false)
-    private String numeroCuenta;
+    private Long numeroCuenta;
     @Enumerated(EnumType.STRING)
     private TipoCuenta tipoCuenta; // AHORRO, CORRIENTE
     @Column(nullable = false, precision = 15, scale= 2) //Precision= numero total de numeros que puede tener el valor, scale= numeros despues de la coma
@@ -40,7 +41,7 @@ public class Cuenta {
     public Cuenta() {
     }
 
-    public Cuenta(String numeroCuenta, TipoCuenta tipoCuenta, Cliente cliente, LocalDateTime fechaApertura, Long version) {
+    public Cuenta(Long numeroCuenta, TipoCuenta tipoCuenta, Cliente cliente, LocalDateTime fechaApertura, Long version) {
         this.numeroCuenta = numeroCuenta;
         this.tipoCuenta = tipoCuenta;
         this.cliente = cliente;
@@ -56,11 +57,11 @@ public class Cuenta {
         this.id = id;
     }
 
-    public String getNumeroCuenta() {
+    public Long getNumeroCuenta() {
         return numeroCuenta;
     }
 
-    public void setNumeroCuenta(String numeroCuenta) {
+    public void setNumeroCuenta(Long numeroCuenta) {
         this.numeroCuenta = numeroCuenta;
     }
 
