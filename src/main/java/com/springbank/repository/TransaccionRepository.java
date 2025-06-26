@@ -1,4 +1,3 @@
-
 package com.springbank.repository;
 
 import com.springbank.entity.Transaccion;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TransaccionRepository extends JpaRepository<Transaccion, Long> {
-    
-    @Query("SELECT t FROM Transaccion t WHERE t.cuenta_origen_id = :cuentaId ORDER BY t.fecha DESC")
+
+    @Query("SELECT t FROM Transaccion t WHERE t.cuentaOrigen.id = :cuentaId ORDER BY t.fecha DESC")
     List<Transaccion> obtenerHistorial(@Param("cuentaId") Long cuentaId);
 }
