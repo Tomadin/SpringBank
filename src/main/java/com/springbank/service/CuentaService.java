@@ -3,7 +3,9 @@ package com.springbank.service;
 import com.springbank.dto.Request.AsignarCuentaDTO;
 import com.springbank.entity.Cliente;
 import com.springbank.entity.Cuenta;
+import com.springbank.exception.ClienteNoEncontrado;
 import com.springbank.exception.CuentaInvalida;
+import com.springbank.repository.ClienteRepository;
 import com.springbank.repository.CuentaRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,10 +18,14 @@ public class CuentaService {
 
     @Autowired
     CuentaRepository cuentaRepository;
+    @Autowired
+    ClienteRepository clienteRepository;
 
     @Transactional
-    public Cuenta crearCuenta(AsignarCuentaDTO cuentaDTO, Cliente cliente) {
+    public Cuenta crearCuenta(AsignarCuentaDTO cuentaDTO) {
 
+        Cliente cliente = traerCliente(cuentaDTO.getClienteId());
+        
         validarCuenta(cuentaDTO, cliente);
 
         Cuenta cuenta = new Cuenta(
@@ -33,6 +39,12 @@ public class CuentaService {
         return cuentaRepository.save(cuenta); //Guardamos y devolvemos la cuenta
     }
 
+    private Cliente traerCliente(Long id) throws ClienteNoEncontrado{
+        Cliente cliente = (Cliente) clienteRepository.findById(id)
+                .orElseThrow(() -> new ClienteNoEncontrado("No se encontró cuenta con el id " + id));
+        return cliente;
+    }
+    
     private void validarCuenta(AsignarCuentaDTO cuentaDTO, Cliente cliente) {
         for (Cuenta cuenta : cliente.getCuentas()) {
             if (cuenta.getTipoCuenta().equals(cuentaDTO.getTipoCuenta())) {

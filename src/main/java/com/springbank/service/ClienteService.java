@@ -12,6 +12,7 @@ import com.springbank.exception.ClienteNoEncontrado;
 import com.springbank.exception.DniInvalido;
 import com.springbank.exception.EmailInvalido;
 import com.springbank.repository.ClienteRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +107,7 @@ public class ClienteService {
         Cliente cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new ClienteNoEncontrado("Cliente no encontrado con id: " + id));
 
-        Cuenta cuenta = cuentaService.crearCuenta(cuentaDTO, cliente);
+        Cuenta cuenta = cuentaService.crearCuenta(cuentaDTO);
 
         List<Cuenta> cuentas = cliente.getCuentas();
         cuentas.add(cuenta);
@@ -155,6 +156,16 @@ public class ClienteService {
                 usuarioDTO,
                 cuentasIdList);
 
+    }
+
+    public List<ClienteResponseDTO> obtenerTodos() {
+        List<Cliente> clientes = clienteRepository.findAll();
+        List<ClienteResponseDTO> clientesResponseDTOs = new ArrayList<>();
+        for (Cliente cliente : clientes) {
+            ClienteResponseDTO clienteResponseDTO = generarClienteResponseDTO(cliente);
+            clientesResponseDTOs.add(clienteResponseDTO);
+       }
+        return clientesResponseDTOs;
     }
 
 }

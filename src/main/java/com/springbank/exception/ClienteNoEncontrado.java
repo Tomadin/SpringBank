@@ -2,7 +2,7 @@
 package com.springbank.exception;
 
 
-public class ClienteNoEncontrado extends Exception{
+public class ClienteNoEncontrado extends RuntimeException{
 
     
     public ClienteNoEncontrado() {
