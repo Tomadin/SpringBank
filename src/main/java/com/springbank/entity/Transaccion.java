@@ -121,7 +121,17 @@ public class Transaccion implements Serializable{
     public String toString() {
         return "Transaccion{" + "id=" + id + ", monto=" + monto + ", tipo=" + tipo + ", cuentaOrigen=" + cuentaOrigen + ", cuentaDestino=" + cuentaDestino + ", estado=" + estado + ", descripcion=" + descripcion + ", fecha=" + fecha + '}';
     }
-    
-    
-    
+
+    public void marcarComoCompletada() {
+        this.estado = EstadoTransaccion.COMPLETADA;
+    }
+    public void marcarComoActiva() {
+        this.estado = EstadoTransaccion.ACTIVA;
+    }
+    public void marcarComoFallida() {
+        this.estado = EstadoTransaccion.FALLIDA;
+    }
+    public void marcarComoAbortada() {
+        this.estado = EstadoTransaccion.ABORTADA;
+    }
 }
