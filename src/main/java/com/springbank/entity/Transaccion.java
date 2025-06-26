@@ -43,12 +43,14 @@ public class Transaccion implements Serializable{
     public Transaccion() {
     }
 
-    public Transaccion(TipoTransaccion tipo, Cuenta cuentaOrigen, Cuenta cuentaDestino, String descripcion, LocalDateTime fecha) {
+    public Transaccion(BigDecimal monto, TipoTransaccion tipo, Cuenta cuentaOrigen, Cuenta cuentaDestino, String descripcion) {
+        this.monto = monto;
         this.tipo = tipo;
         this.cuentaOrigen = cuentaOrigen;
         this.cuentaDestino = cuentaDestino;
         this.descripcion = descripcion;
-        this.fecha = fecha;
+        this.estado = EstadoTransaccion.ACTIVA;
+        this.fecha = LocalDateTime.now();
     }
 
     public Long getId() {

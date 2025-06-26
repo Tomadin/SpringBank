@@ -25,7 +25,7 @@ public class Cuenta implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true, nullable= false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    
     private Long numeroCuenta;
     @Enumerated(EnumType.STRING)
     private TipoCuenta tipoCuenta; // AHORRO, CORRIENTE
