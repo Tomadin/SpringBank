@@ -3,6 +3,8 @@ package com.springbank.controller;
 import com.springbank.dto.Request.ClienteRequestDTO;
 import com.springbank.dto.Response.ClienteResponseDTO;
 import com.springbank.exception.ClienteNoEncontrado;
+import com.springbank.exception.DniInvalido;
+import com.springbank.exception.EmailInvalido;
 
 import com.springbank.service.ClienteService;
 import jakarta.validation.Valid;
@@ -35,7 +37,7 @@ public class ClienteController {
             return ResponseEntity
                     .status(HttpStatus.CREATED)
                     .body("Cliente creado correctamente.");
-        } catch (Exception e) {
+        } catch (DniInvalido | EmailInvalido e) {
             throw e;
         }
     }

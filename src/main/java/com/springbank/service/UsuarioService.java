@@ -1,7 +1,7 @@
 
 package com.springbank.service;
 
-import com.springbank.dto.Request.AsignarUsuarioDTO;
+import com.springbank.dto.Request.UsuarioRequestDTO;
 import com.springbank.dto.Response.UsuarioResponseDTO;
 import com.springbank.entity.Cliente;
 import com.springbank.entity.Usuario;
@@ -20,7 +20,7 @@ public class UsuarioService {
     ClienteRepository clienteRepository;
     
     @Transactional
-    public Usuario crearUsuario(AsignarUsuarioDTO asignarUsuarioDTO) {
+    public Usuario crearUsuario(UsuarioRequestDTO asignarUsuarioDTO) {
         Cliente cliente = clienteRepository.findById(asignarUsuarioDTO.getClienteId())
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado con id: " + asignarUsuarioDTO.getClienteId()));
         

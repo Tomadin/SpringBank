@@ -1,8 +1,8 @@
 package com.springbank.service;
 
-import com.springbank.dto.Request.AsignarCuentaDTO;
-import com.springbank.dto.Request.AsignarUsuarioDTO;
+import com.springbank.dto.Request.UsuarioRequestDTO;
 import com.springbank.dto.Request.ClienteRequestDTO;
+import com.springbank.dto.Request.CuentaRequestDTO;
 import com.springbank.dto.Response.ClienteResponseDTO;
 import com.springbank.dto.Response.UsuarioResponseDTO;
 import com.springbank.entity.Cliente;
@@ -93,7 +93,7 @@ public class ClienteService {
     }
 
     @Transactional
-    public void agregarUsuarioPorId(Long id, AsignarUsuarioDTO asignarUsuarioDTO) throws ClienteNoEncontrado {
+    public void agregarUsuarioPorId(Long id, UsuarioRequestDTO asignarUsuarioDTO) throws ClienteNoEncontrado {
         Cliente cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new ClienteNoEncontrado("Cliente no encontrado con id: " + id)); //Si no encuentra un Cliente con ese id, no existe y lanza una excepción.
 
@@ -103,7 +103,7 @@ public class ClienteService {
     }
 
     @Transactional
-    public void agregarCuentaPorId(Long id, AsignarCuentaDTO cuentaDTO) throws ClienteNoEncontrado, Exception {
+    public void agregarCuentaPorId(Long id, CuentaRequestDTO cuentaDTO) throws ClienteNoEncontrado, Exception {
         Cliente cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new ClienteNoEncontrado("Cliente no encontrado con id: " + id));
 

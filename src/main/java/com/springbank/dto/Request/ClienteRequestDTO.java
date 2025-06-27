@@ -1,12 +1,17 @@
 
 package com.springbank.dto.Request;
 
+import jakarta.validation.constraints.NotBlank;
 
 
 public class ClienteRequestDTO{
+    @NotBlank
     private final String nombre;
+    @NotBlank
     private final String apellido;
+    @NotBlank
     private final String email;
+    @NotBlank
     private final String dni;
 
 

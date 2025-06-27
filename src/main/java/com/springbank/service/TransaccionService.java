@@ -1,12 +1,17 @@
 package com.springbank.service;
 
+import com.springbank.dto.Response.TransferenciaResponseDTO;
 import com.springbank.entity.Cuenta;
 import com.springbank.entity.Transaccion;
+import com.springbank.enums.EstadoTransaccion;
 import com.springbank.enums.TipoTransaccion;
 import com.springbank.exception.TransaccionException;
 import com.springbank.repository.CuentaRepository;
 import com.springbank.repository.TransaccionRepository;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,6 +123,34 @@ public class TransaccionService {
             throw new TransaccionException("No se puede realizar una transferencia a la misma cuenta.");
         }
     }
+
+    List<TransferenciaResponseDTO> obtenerTransaccionesPorNumeroCuenta(Long numeroCuenta) {
+        List<Transaccion> transacciones = transaccionRepository.obtenerHistorialPorNumeroCuenta(numeroCuenta);
+        if(transacciones == null){
+            throw new TransaccionException("No hay transacciones con el numero de cuenta "+numeroCuenta);
+        }
+        
+        List<TransferenciaResponseDTO> transferenciasResponseDTO = new ArrayList<>();
+        
+        for (Transaccion transaccion : transacciones) {
+            transferenciasResponseDTO.add(new TransferenciaResponseDTO(
+                    transaccion.getId(),
+                    transaccion.getMonto(),
+                    transaccion.getTipo(),
+                    transaccion.getCuentaOrigen().getId(),
+                    transaccion.getCuentaDestino().getId(),
+                    transaccion.getEstado(),
+                    transaccion.getDescripcion(), 
+                    transaccion.getFecha(),
+                    transaccion.getCuentaOrigen().getNumeroCuenta(),
+                    transaccion.getCuentaDestino().getNumeroCuenta()
+                    ));
+        }
+        
+        return transferenciasResponseDTO;
+        
+    }
     
     
 }
+

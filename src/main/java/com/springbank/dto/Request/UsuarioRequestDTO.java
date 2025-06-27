@@ -1,21 +1,26 @@
 
 package com.springbank.dto.Request;
 
-
 import com.springbank.enums.RolUsuario;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 
-public class UsuarioRequestDTO {
+public class UsuarioRequestDTO { //utilizar @Valid en el controlador para validad los campos @NotBlank y @NotNull
+    @NotBlank
     final private String username;
+    @NotBlank
     final private String password;
+    @NotNull
     final private RolUsuario rol;
-    final private Long clienteID;
+    @NotNull
+    final private Long clienteId;
 
-    public UsuarioRequestDTO(String username, String password, RolUsuario rol, Long clienteID) {
+    public UsuarioRequestDTO(String username, String password, RolUsuario rol, Long clienteId) {
         this.username = username;
         this.password = password;
         this.rol = rol;
-        this.clienteID = clienteID;
+        this.clienteId = clienteId;
     }
 
     public String getUsername() {
@@ -30,10 +35,9 @@ public class UsuarioRequestDTO {
         return rol;
     }
 
-    public Long getClienteID() {
-        return clienteID;
+    public Long getClienteId() {
+        return clienteId;
     }
-
     
     
 }
