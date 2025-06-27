@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 
-public class TransferenciaResponseDTO {
+public class TransaccionResponseDTO {
     final private Long id;
     final private BigDecimal monto;
     final private TipoTransaccion tipo;
@@ -22,7 +22,7 @@ public class TransferenciaResponseDTO {
 
    
     
-    public TransferenciaResponseDTO(Long id, BigDecimal monto, TipoTransaccion tipo, Long cuentaOrigenId, Long cuentaDestinoId,  EstadoTransaccion estado, String motivo, LocalDateTime fecha, Long numeroCuentaOrigen, Long numeroCuentaDestino) {
+    public TransaccionResponseDTO(Long id, BigDecimal monto, TipoTransaccion tipo, Long cuentaOrigenId, Long cuentaDestinoId,  EstadoTransaccion estado, String motivo, LocalDateTime fecha, Long numeroCuentaOrigen, Long numeroCuentaDestino) {
         this.id = id;
         this.monto = monto;
         this.tipo = tipo;

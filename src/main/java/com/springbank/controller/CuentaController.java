@@ -6,7 +6,7 @@ package com.springbank.controller;
 
 import com.springbank.dto.Request.CuentaRequestDTO;
 import com.springbank.dto.Response.SaldoResponseDTO;
-import com.springbank.dto.Response.TransferenciaResponseDTO;
+import com.springbank.dto.Response.TransaccionResponseDTO;
 import com.springbank.service.CuentaService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +47,8 @@ public class CuentaController {
     }
     
     @GetMapping("/{numeroCuenta}/transacciones")
-    public ResponseEntity<List<TransferenciaResponseDTO>> traerTransaccionesPorNumeroCuenta(@PathVariable Long numeroCuenta) {
-        List<TransferenciaResponseDTO> transferenciasDTO = cuentaService.obtenerTransaccionesPorNumeroCuenta(numeroCuenta);
+    public ResponseEntity<List<TransaccionResponseDTO>> traerTransaccionesPorNumeroCuenta(@PathVariable Long numeroCuenta) {
+        List<TransaccionResponseDTO> transferenciasDTO = cuentaService.obtenerTransaccionesPorNumeroCuenta(numeroCuenta);
         
         return ResponseEntity.ok(transferenciasDTO);
     }

@@ -1,6 +1,6 @@
 package com.springbank.service;
 
-import com.springbank.dto.Response.TransferenciaResponseDTO;
+import com.springbank.dto.Response.TransaccionResponseDTO;
 import com.springbank.entity.Cuenta;
 import com.springbank.entity.Transaccion;
 import com.springbank.enums.EstadoTransaccion;
@@ -124,16 +124,16 @@ public class TransaccionService {
         }
     }
 
-    List<TransferenciaResponseDTO> obtenerTransaccionesPorNumeroCuenta(Long numeroCuenta) {
+    List<TransaccionResponseDTO> obtenerTransaccionesPorNumeroCuenta(Long numeroCuenta) {
         List<Transaccion> transacciones = transaccionRepository.obtenerHistorialPorNumeroCuenta(numeroCuenta);
         if(transacciones == null){
             throw new TransaccionException("No hay transacciones con el numero de cuenta "+numeroCuenta);
         }
         
-        List<TransferenciaResponseDTO> transferenciasResponseDTO = new ArrayList<>();
+        List<TransaccionResponseDTO> transferenciasResponseDTO = new ArrayList<>();
         
         for (Transaccion transaccion : transacciones) {
-            transferenciasResponseDTO.add(new TransferenciaResponseDTO(
+            transferenciasResponseDTO.add(new TransaccionResponseDTO(
                     transaccion.getId(),
                     transaccion.getMonto(),
                     transaccion.getTipo(),

@@ -3,7 +3,7 @@ package com.springbank.service;
 import com.springbank.dto.Request.CuentaRequestDTO;
 import com.springbank.dto.Response.CuentaResponseDTO;
 import com.springbank.dto.Response.SaldoResponseDTO;
-import com.springbank.dto.Response.TransferenciaResponseDTO;
+import com.springbank.dto.Response.TransaccionResponseDTO;
 import com.springbank.entity.Cliente;
 import com.springbank.entity.Cuenta;
 import com.springbank.enums.TipoCuenta;
@@ -83,7 +83,7 @@ public class CuentaService {
         return min + (long) (Math.random() * (max - min + 1));
     }
 
-    public List<TransferenciaResponseDTO> obtenerTransaccionesPorNumeroCuenta(Long numeroCuenta) { //llamar al service de transferencias y traer las que coincidan con el numeroCuenta 
+    public List<TransaccionResponseDTO> obtenerTransaccionesPorNumeroCuenta(Long numeroCuenta) { //llamar al service de transferencias y traer las que coincidan con el numeroCuenta 
         return transaccionService.obtenerTransaccionesPorNumeroCuenta(numeroCuenta);
     }
 
