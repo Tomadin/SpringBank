@@ -1,15 +1,16 @@
 package com.springbank.service;
 
+
 import com.springbank.dto.Response.TransaccionResponseDTO;
 import com.springbank.entity.Cuenta;
 import com.springbank.entity.Transaccion;
-import com.springbank.enums.EstadoTransaccion;
 import com.springbank.enums.TipoTransaccion;
+import com.springbank.exception.CuentaNoEncontrada;
+import com.springbank.exception.SaldoInsuficienteException;
 import com.springbank.exception.TransaccionException;
 import com.springbank.repository.CuentaRepository;
 import com.springbank.repository.TransaccionRepository;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class TransaccionService {
 
     @Autowired
-    TransaccionRepository transaccionRepository;
+    private TransaccionRepository transaccionRepository;
     @Autowired
-    CuentaRepository cuentaRepository;
+    private CuentaRepository cuentaRepository;
 
     @Transactional
     public void realizarDeposito(BigDecimal monto, Long cuentaId) {
@@ -48,29 +49,34 @@ public class TransaccionService {
         }
     }
 
-    private Cuenta obtenerCuentaValida(Long cuentaOrigenId) {
-        return cuentaRepository.findById(cuentaOrigenId)
-                .orElseThrow(() -> new RuntimeException("Cuenta no encontrada con id: " + cuentaOrigenId));
+    private Cuenta obtenerCuentaValida(Long numeroCuentaOrigenId) {
+
+        Cuenta cuenta = cuentaRepository.numeroCuenta(numeroCuentaOrigenId);
+        if (cuenta == null) {
+            throw new CuentaNoEncontrada("Cuenta no encontrada con numero de cuenta: " + numeroCuentaOrigenId);
+        }
+
+        return cuenta;
     }
     //MODIFICAR PARA SOPORTAR MAS TRANSACCIONES COMO RETIRO O TRANSFERENCIA
 
     private Transaccion crearTransaccion(BigDecimal monto, TipoTransaccion tipo, Cuenta cuentaOrigen, Cuenta cuentaDestino, String descripcion) {
-
+        Transaccion transaccion;
         if (tipo.equals(TipoTransaccion.DEPOSITO) || tipo.equals(TipoTransaccion.RETIRO)) {
-            cuentaDestino = cuentaOrigen;
+            transaccion = new Transaccion(monto, tipo, cuentaOrigen, cuentaOrigen, descripcion);
+        } else {
+            transaccion = new Transaccion(monto, tipo, cuentaOrigen, cuentaDestino, descripcion);
         }
-
-        Transaccion transaccion = new Transaccion(monto, tipo, cuentaOrigen, cuentaDestino, descripcion);
 
         return transaccion;
     }
 
     @Transactional
-    public void realizarRetiro(BigDecimal monto, Long cuentaId) {
+    public void realizarRetiro(BigDecimal monto, Long numeroCuentaOrigenId) {
         validarMonto(monto);
-        Cuenta cuenta = obtenerCuentaValida(cuentaId);
+        Cuenta cuenta = obtenerCuentaValida(numeroCuentaOrigenId);
         validarSaldo(monto, cuenta.getSaldo());
-        
+
         String descripcion = "Retiro en cuenta " + cuenta.getNumeroCuenta();
         Transaccion transaccion = crearTransaccion(monto, TipoTransaccion.RETIRO, cuenta, cuenta, descripcion);
 
@@ -84,28 +90,30 @@ public class TransaccionService {
 
     }
 
+   
+
     private void validarSaldo(BigDecimal monto, BigDecimal saldo) {
         if (monto.compareTo(saldo) > 0) {
-            throw new IllegalArgumentException("Saldo insuficiente para realizar el retiro. Disponible: " + saldo);
+            throw new SaldoInsuficienteException("Saldo insuficiente para realizar el retiro. Disponible: " + saldo);
         }
     }
 
     @Transactional
-    public void realizarTransferencia(BigDecimal monto, Long cuentaOrigenId, Long cuentaDestinoId){
+    public void realizarTransferencia(BigDecimal monto, Long numeroCuentaOrigenId, Long numeroCuentaDestinoId) {
         //Cuentas
-        Cuenta cuentaOrigen = obtenerCuentaValida(cuentaOrigenId);
-        Cuenta cuentaDestino = obtenerCuentaValida(cuentaDestinoId);
+        Cuenta cuentaOrigen = obtenerCuentaValida(numeroCuentaOrigenId);
+        Cuenta cuentaDestino = obtenerCuentaValida(numeroCuentaDestinoId);
         //Validaciones
         validarMonto(monto);
-        validarCuentas(cuentaOrigenId, cuentaDestinoId);
+        validarCuentas(numeroCuentaOrigenId, numeroCuentaDestinoId);
         validarSaldo(monto, cuentaOrigen.getSaldo());
-        
-        String descripcion = 
-                "Transaccion desde cuenta " + cuentaOrigen.getNumeroCuenta()+", titular: " +
-                cuentaOrigen.getCliente().getNombre()+" "+cuentaOrigen.getCliente().getApellido()+ 
-                "hacia cuenta "+cuentaDestino.getNumeroCuenta()+", titular: " +
-                cuentaDestino.getCliente().getNombre()+" "+cuentaDestino.getCliente().getApellido();
-        
+
+        String descripcion
+                = "Transaccion desde cuenta " + cuentaOrigen.getNumeroCuenta() + ", titular: "
+                + cuentaOrigen.getCliente().getNombre() + " " + cuentaOrigen.getCliente().getApellido()
+                + " hacia cuenta " + cuentaDestino.getNumeroCuenta() + ", titular: "
+                + cuentaDestino.getCliente().getNombre() + " " + cuentaDestino.getCliente().getApellido();
+
         Transaccion transaccion = crearTransaccion(monto, TipoTransaccion.TRANSFERENCIA, cuentaOrigen, cuentaDestino, descripcion);
         transaccion.marcarComoCompletada();
         transaccionRepository.save(transaccion);
@@ -113,25 +121,25 @@ public class TransaccionService {
         cuentaOrigen.setSaldo(cuentaOrigen.getSaldo().subtract(monto));
         //Sumamos el monto al saldo de la cuenta de destino
         cuentaDestino.setSaldo(cuentaDestino.getSaldo().add(monto));
-        
+
         cuentaRepository.save(cuentaOrigen);
         cuentaRepository.save(cuentaDestino);
     }
 
-    private void validarCuentas(Long cuentaOrigenId, Long cuentaDestinoId) {
-        if(cuentaOrigenId.equals(cuentaDestinoId)){
+    private void validarCuentas(Long numeroCuentaOrigenId, Long numeroCuentaDestinoId) {
+        if (numeroCuentaOrigenId.equals(numeroCuentaDestinoId)) {
             throw new TransaccionException("No se puede realizar una transferencia a la misma cuenta.");
         }
     }
 
-    List<TransaccionResponseDTO> obtenerTransaccionesPorNumeroCuenta(Long numeroCuenta) {
+    public List<TransaccionResponseDTO> obtenerTransaccionesPorNumeroCuenta(Long numeroCuenta) {
         List<Transaccion> transacciones = transaccionRepository.obtenerHistorialPorNumeroCuenta(numeroCuenta);
-        if(transacciones == null){
-            throw new TransaccionException("No hay transacciones con el numero de cuenta "+numeroCuenta);
+        if (transacciones.isEmpty()) {
+            throw new TransaccionException("No hay transacciones con el numero de cuenta " + numeroCuenta);
         }
-        
+
         List<TransaccionResponseDTO> transferenciasResponseDTO = new ArrayList<>();
-        
+
         for (Transaccion transaccion : transacciones) {
             transferenciasResponseDTO.add(new TransaccionResponseDTO(
                     transaccion.getId(),
@@ -140,17 +148,15 @@ public class TransaccionService {
                     transaccion.getCuentaOrigen().getId(),
                     transaccion.getCuentaDestino().getId(),
                     transaccion.getEstado(),
-                    transaccion.getDescripcion(), 
+                    transaccion.getDescripcion(),
                     transaccion.getFecha(),
                     transaccion.getCuentaOrigen().getNumeroCuenta(),
                     transaccion.getCuentaDestino().getNumeroCuenta()
-                    ));
+            ));
         }
-        
-        return transferenciasResponseDTO;
-        
-    }
-    
-    
-}
 
+        return transferenciasResponseDTO;
+
+    }
+
+}

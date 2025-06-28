@@ -23,6 +23,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/api/v1/clientes")
 public class ClienteController {
 
+    /**
+     * 
+     *  IMPÓRTANTE: UTILIZAR APIRESPONSE PARA LAS RESPUESTAS DE LA API
+     * 
+     * */
+    
+    
+    
+    
     private final ClienteService clienteService;
 
     @Autowired

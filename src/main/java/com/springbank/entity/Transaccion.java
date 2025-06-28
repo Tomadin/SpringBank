@@ -1,4 +1,3 @@
-
 package com.springbank.entity;
 
 import com.springbank.enums.EstadoTransaccion;
@@ -20,7 +19,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "transacciones")
-public class Transaccion implements Serializable{
+public class Transaccion implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -125,12 +125,15 @@ public class Transaccion implements Serializable{
     public void marcarComoCompletada() {
         this.estado = EstadoTransaccion.COMPLETADA;
     }
+
     public void marcarComoActiva() {
         this.estado = EstadoTransaccion.ACTIVA;
     }
+
     public void marcarComoFallida() {
         this.estado = EstadoTransaccion.FALLIDA;
     }
+
     public void marcarComoAbortada() {
         this.estado = EstadoTransaccion.ABORTADA;
     }

@@ -1,17 +1,15 @@
 package com.springbank.service;
 
 import com.springbank.dto.Request.CuentaRequestDTO;
-import com.springbank.dto.Response.CuentaResponseDTO;
 import com.springbank.dto.Response.SaldoResponseDTO;
 import com.springbank.dto.Response.TransaccionResponseDTO;
 import com.springbank.entity.Cliente;
 import com.springbank.entity.Cuenta;
-import com.springbank.enums.TipoCuenta;
 import com.springbank.exception.ClienteNoEncontrado;
 import com.springbank.exception.CuentaInvalida;
+import com.springbank.exception.CuentaNoEncontrada;
 import com.springbank.repository.ClienteRepository;
 import com.springbank.repository.CuentaRepository;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class CuentaService {
 
     @Autowired
-    CuentaRepository cuentaRepository;
+    private CuentaRepository cuentaRepository;
     @Autowired
-    ClienteRepository clienteRepository;
+    private ClienteRepository clienteRepository;
     @Autowired
-    TransaccionService transaccionService;
+    private TransaccionService transaccionService;
 
     @Transactional
     public Cuenta crearCuenta(CuentaRequestDTO cuentaDTO) {
@@ -63,7 +61,7 @@ public class CuentaService {
     public SaldoResponseDTO obtenerSaldo(Long numeroCuenta) {
         Cuenta cuenta = cuentaRepository.numeroCuenta(numeroCuenta);
         if (cuenta == null) {
-            throw new CuentaInvalida("No se encontró cuenta con número: " + numeroCuenta);
+            throw new CuentaNoEncontrada("No se encontró cuenta con número: " + numeroCuenta);
         }
 
         SaldoResponseDTO saldoResponseDTO = new SaldoResponseDTO(cuenta.getNumeroCuenta(), cuenta.getSaldo());
