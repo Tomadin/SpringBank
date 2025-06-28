@@ -6,6 +6,7 @@ import com.springbank.entity.Cuenta;
 import com.springbank.entity.Transaccion;
 import com.springbank.enums.TipoTransaccion;
 import com.springbank.exception.CuentaNoEncontrada;
+import com.springbank.exception.MontoInvalidoException;
 import com.springbank.exception.SaldoInsuficienteException;
 import com.springbank.exception.TransaccionException;
 import com.springbank.repository.CuentaRepository;
@@ -44,8 +45,8 @@ public class TransaccionService {
     }
 
     private void validarMonto(BigDecimal monto) {
-        if (monto == null || monto.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("El monto debe ser mayor a cero. Valor recibido: " + monto);
+        if (monto == null || monto.compareTo(new BigDecimal("99.99")) <= 0) {
+            throw new MontoInvalidoException("El monto debe ser mayor a cien. Valor recibido: " + monto);
         }
     }
 
@@ -58,7 +59,7 @@ public class TransaccionService {
 
         return cuenta;
     }
-    //MODIFICAR PARA SOPORTAR MAS TRANSACCIONES COMO RETIRO O TRANSFERENCIA
+    
 
     private Transaccion crearTransaccion(BigDecimal monto, TipoTransaccion tipo, Cuenta cuentaOrigen, Cuenta cuentaDestino, String descripcion) {
         Transaccion transaccion;
