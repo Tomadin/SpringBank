@@ -1,6 +1,10 @@
-
 package com.springbank.config;
 
+import com.springbank.entity.Token;
+import com.springbank.entity.Usuario;
+import com.springbank.repository.TokenRepository;
+import com.springbank.repository.UsuarioRepository;
+import com.springbank.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -8,60 +12,84 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.util.Collections;
+import java.util.Optional;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 
-@Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter { //cada vez que se realice una peticion se ejecutara este filtro.
 
-    private static final String SECRET_KEY = "clave-secreta-super-segura-de-al-menos-32-caracteres";
+    private static final String SECRET_KEY = "8d333892e63ad488ee68715566c7d2ee33154a1ea632114923af00e87a2d4547";
+    private final JwtService jwtService;
+    private final TokenRepository tokenRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final UserDetailsService userDetailsService;
+
+    
+    public JwtAuthenticationFilter(JwtService jwtService, TokenRepository tokenRepository, UsuarioRepository usuarioRepository, UserDetailsService userDetailsService) {
+        this.jwtService = jwtService;
+        this.tokenRepository = tokenRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NotNull HttpServletRequest request,
+            @NotNull HttpServletResponse response,
+            @NotNull FilterChain filterChain) throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
+        if (request.getServletPath().contains("/auth")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        final String jwt = authHeader.substring(7);
+        final String jwtToken = authHeader.substring(7);
+        final String username = jwtService.traerUsername(jwtToken);
 
-        try {
-            Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(jwt)
-                    .getBody();
-
-            String username = claims.getSubject();
-
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        username,
-                        null,
-                        Collections.emptyList()
-                );
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
-
-        } catch (Exception e) {
-            System.out.println("JWT inválido: " + e.getMessage());
+        if (username == null || SecurityContextHolder.getContext().getAuthentication() != null) {
+            filterChain.doFilter(request, response);
+            return;
         }
 
+        final Token token = tokenRepository.findByToken(jwtToken);
+
+        if (token == null || token.isExpired() || token.isRevoked()) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        final UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+
+        final Optional<Usuario> user = usuarioRepository.findByUsername(userDetails.getUsername());
+        if (user.isEmpty()) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        boolean isTokenValid = jwtService.isTokenValid(jwtToken, user.get());
+        if (!isTokenValid) {
+            return;
+        }
+        final var authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+
         filterChain.doFilter(request, response);
+
     }
 }
