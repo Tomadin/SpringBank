@@ -20,7 +20,7 @@ public class Token {
     @Column(unique = true)
     private String token;
     @Enumerated(EnumType.STRING)
-    private TokenTipoEnum tipoToken = TokenTipoEnum.BEARER;
+    private TokenTipoEnum tipoToken;
     private boolean revoked;
     private boolean expired;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,6 +30,16 @@ public class Token {
     public Token() {
     }
 
+    public Token(String token, TokenTipoEnum tipoToken, boolean revoked, boolean expired, Usuario usuario) {
+        this.token = token;
+        this.tipoToken = tipoToken;
+        this.revoked = revoked;
+        this.expired = expired;
+        this.usuario = usuario;
+    }
+
+    
+    
     public Long getId() {
         return id;
     }
