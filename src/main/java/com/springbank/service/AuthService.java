@@ -7,6 +7,7 @@ import com.springbank.dto.Response.TokenResponseDTO;
 import com.springbank.entity.Token;
 import com.springbank.entity.Usuario;
 import com.springbank.enums.TokenTipoEnum;
+import com.springbank.exception.TokenInvalidoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.springbank.repository.TokenRepository;
@@ -41,7 +42,7 @@ public class AuthService {
                         request.getUsername(),
                         request.getPassword())
         );
-        
+
         Usuario user = usuarioService.buscarPorUsername(request.getUsername());
         String jwtToken = jwtService.generarToken(user);
         String jwtRefreshTOken = jwtService.generarRefreshToken(user);
@@ -51,7 +52,28 @@ public class AuthService {
     }
 
     public TokenResponseDTO refreshToken(String authHeader) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("El header no contiene un Bearer Token válido.");
+        }
+
+        final String refreshToken = authHeader.substring(7);
+        final String username = jwtService.traerUsername(refreshToken);
+
+        if (username == null) {
+            throw new TokenInvalidoException("El Refresh Token no contiene username.");
+        }
+
+        final Usuario user = usuarioService.buscarPorUsername(username);
+
+        if (!jwtService.isTokenValid(refreshToken, user)) {
+            throw new TokenInvalidoException("El refresh token está expirado o es inválido.");
+        }
+
+        final String accessToken = jwtService.generarToken(user);
+        revokeAllUserTokens(user);             // marcamos todos los tokens como expirados o revocados
+        saveUserToken(user, accessToken);   // guardamos el nuevo token
+
+        return new TokenResponseDTO(accessToken, refreshToken); //usamos el mismo refresh token
     }
 
     @Transactional
@@ -63,7 +85,7 @@ public class AuthService {
     @Transactional
     private void revokeAllUserTokens(Usuario user) {
         final List<Token> validUserTokens = tokenRepository.findValidOrNotRevokedTokensByUserId(user.getId());
-        if(!validUserTokens.isEmpty()){
+        if (!validUserTokens.isEmpty()) {
             for (Token token : validUserTokens) {
                 token.setExpired(true);
                 token.setRevoked(true);
