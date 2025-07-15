@@ -1,4 +1,3 @@
-
 package com.springbank.entity;
 
 import jakarta.persistence.CascadeType;
@@ -16,27 +15,27 @@ import java.util.List;
 
 @Entity
 @Table(name = "clientes")
-public class Cliente implements Serializable{
+public class Cliente implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(nullable = false)
     private String nombre;
     @Column(nullable = false)
     private String apellido;
-    @Column(unique = true,nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
-    @Column(unique = true,nullable = false)
+    @Column(unique = true, nullable = false)
     private String dni;
-    
-    @OneToOne //Un Cliente tiene un usuario y un usuario pertenece solo a un cliente.
+
+ 
+    @OneToOne(mappedBy = "cliente")//Un Cliente tiene un usuario y un usuario pertenece solo a un cliente.
     private Usuario usuario;
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<Cuenta> cuentas = new ArrayList<>();
 
-    
-    
     public Cliente() {
     }
 
@@ -45,7 +44,7 @@ public class Cliente implements Serializable{
         this.apellido = apellido;
         this.email = email;
         this.dni = dni;
-       // this.usuario = usuario;
+        // this.usuario = usuario;
     }
 
     public Long getId() {
@@ -108,5 +107,5 @@ public class Cliente implements Serializable{
     public String toString() {
         return "Cliente{" + "id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + ", email=" + email + ", dni=" + dni + ", usuario=" + usuario + ", cuentas=" + cuentas + '}';
     }
-    
+
 }

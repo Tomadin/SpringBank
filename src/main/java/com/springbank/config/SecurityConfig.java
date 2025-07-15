@@ -46,8 +46,6 @@ public class SecurityConfig {
         return new JwtAuthenticationFilter(jwtService, tokenRepository, usuarioRepository, userDetailsService());
     }
 
-    
-
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
@@ -100,7 +98,7 @@ public class SecurityConfig {
                 ).authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .logout(logout
-                        -> logout.logoutUrl("/auth/logout")
+                        -> logout.logoutUrl("/api/v1/auth/logout")
                         .addLogoutHandler((request, response, authentication) -> {
                             final var authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
                             logout(authHeader);
@@ -114,14 +112,18 @@ public class SecurityConfig {
 
     private void logout(final String token) {
         if (token == null || !token.startsWith("Bearer ")) {
-            throw new TokenInvalidoException("Token invalido (logout).");
+            throw new TokenInvalidoException("Token inválido (logout).");
         }
 
         final String jwtToken = token.substring(7);
         final Token foundToken = tokenRepository.findByToken(jwtToken);
+
+        if (foundToken == null) {
+            throw new TokenInvalidoException("Token no encontrado en la base de datos.");
+        }
+
         foundToken.setExpired(true);
         foundToken.setRevoked(true);
-
         tokenRepository.save(foundToken);
     }
 

@@ -4,9 +4,13 @@ import com.springbank.dto.Request.UsuarioRequestDTO;
 import com.springbank.dto.Response.UsuarioResponseDTO;
 import com.springbank.entity.Cliente;
 import com.springbank.entity.Usuario;
+import com.springbank.enums.RolUsuario;
 import com.springbank.exception.UsernameNoEncontradoException;
+import com.springbank.exception.UsuarioException;
 import com.springbank.repository.ClienteRepository;
 import com.springbank.repository.UsuarioRepository;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -29,18 +33,49 @@ public class UsuarioService {
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado con id: " + asignarUsuarioDTO.getClienteId()));
 
         String passwordEncriptado = passwordEncoder.encode(asignarUsuarioDTO.getPassword());
-        
+
         Usuario usuario = new Usuario(asignarUsuarioDTO.getUsername(),
                 passwordEncriptado,
                 cliente);
+
+        if (cliente.getUsuario() != null) {
+            throw new RuntimeException("Este cliente ya tiene un usuario asignado.");
+        }
+        cliente.setUsuario(usuario);
 
         return usuarioRepository.save(usuario);
     }
 
     public Usuario buscarPorUsername(String username) {
         Usuario user = (Usuario) usuarioRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNoEncontradoException("No se encontró una cuenta con el username: "+username));
+                .orElseThrow(() -> new UsernameNoEncontradoException("No se encontró una cuenta con el username: " + username));
+        UsuarioResponseDTO userResponse = new UsuarioResponseDTO(user.getId(), user.getUsername(), user.getRol(), user.getCliente().getId());
         return user;
     }
-    
+
+    public UsuarioResponseDTO buscarPorUsernameDTO(String username) {
+        Usuario user = (Usuario) usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNoEncontradoException("No se encontró una cuenta con el username: " + username));
+        UsuarioResponseDTO userResponse = new UsuarioResponseDTO(user.getId(), user.getUsername(), user.getRol(), user.getCliente().getId());
+        return userResponse;
+    }
+
+    public List<Usuario> traerUsuarios() {
+        return usuarioRepository.findAll();
+    }
+
+    public List<UsuarioResponseDTO> traerTodos() {
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        if (usuarios.isEmpty()) {
+            throw new UsuarioException("No existen usuarios.");
+        }
+
+        List<UsuarioResponseDTO> usuariosResponse = new ArrayList<>();
+        for (Usuario usuario : usuarios) {
+            UsuarioResponseDTO usuarioResponse = new UsuarioResponseDTO(usuario.getId(), usuario.getUsername(), usuario.getRol(), usuario.getCliente().getId());
+            usuariosResponse.add(usuarioResponse);
+        }
+        return usuariosResponse;
+    }
+
 }
