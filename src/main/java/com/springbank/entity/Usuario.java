@@ -1,6 +1,6 @@
-
 package com.springbank.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.springbank.enums.RolUsuario;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,13 +9,15 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "usuarios")
-public class Usuario implements Serializable{
+public class Usuario implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,7 +27,9 @@ public class Usuario implements Serializable{
     private String password;
     @Enumerated(EnumType.STRING)
     private RolUsuario rol = RolUsuario.CLIENTE;
-    @OneToOne //Un usuario pertenece a un cliente y un cliente solo tiene un usuario
+    @OneToOne
+    @JoinColumn(name = "cliente_id") //Un usuario pertenece a un cliente y un cliente solo tiene un usuario
+    @JsonManagedReference
     private Cliente cliente;
 
     public Usuario() {
@@ -81,7 +85,5 @@ public class Usuario implements Serializable{
     public String toString() {
         return "Usuario{" + "id=" + id + ", username=" + username + ", password=" + password + ", rol=" + rol + ", cliente=" + cliente + '}';
     }
-    
-    
-    
+
 }
