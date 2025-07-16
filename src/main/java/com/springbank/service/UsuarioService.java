@@ -34,10 +34,11 @@ public class UsuarioService {
 
         String passwordEncriptado = passwordEncoder.encode(asignarUsuarioDTO.getPassword());
 
+        
         Usuario usuario = new Usuario(asignarUsuarioDTO.getUsername(),
                 passwordEncriptado,
                 cliente);
-
+        usuario.setRol(asignarUsuarioDTO.getRol());
         if (cliente.getUsuario() != null) {
             throw new RuntimeException("Este cliente ya tiene un usuario asignado.");
         }
@@ -90,6 +91,13 @@ public class UsuarioService {
             usuariosResponseDTO.add(usuarioResponseDTO);
         }
         return usuariosResponseDTO;
+    }
+
+    public  UsuarioResponseDTO buscarPorId(Long id) {
+        Usuario user  = (Usuario) usuarioRepository.findById(id)
+                .orElseThrow(()-> new UsernameNoEncontradoException("No se encontró un usuario con el id: " + id));
+        
+        return new UsuarioResponseDTO(user.getId(), user.getUsername(), user.getRol(), user.getCliente().getId());
     }
     
 }

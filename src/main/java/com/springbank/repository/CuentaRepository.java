@@ -16,4 +16,7 @@ public interface CuentaRepository extends JpaRepository<Cuenta, Long> {
     @Query("SELECT c FROM Cuenta c WHERE c.numeroCuenta = :numeroCuenta")
     Cuenta numeroCuenta(@Param("numeroCuenta") Long numeroCuenta);
 
+    @Query("SELECT c FROM Cuenta c JOIN c.cliente cli JOIN Usuario u ON u.cliente = cli WHERE u.username = :username")
+    List<Cuenta> findByUsername(@Param("username") String username);
+    
 }

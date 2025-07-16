@@ -1,14 +1,17 @@
 package com.springbank.service;
 
 import com.springbank.dto.Request.CuentaRequestDTO;
+import com.springbank.dto.Response.ClienteResponseDTO;
 import com.springbank.dto.Response.CuentaResponseDTO;
 import com.springbank.dto.Response.SaldoResponseDTO;
 import com.springbank.dto.Response.TransaccionResponseDTO;
 import com.springbank.entity.Cliente;
 import com.springbank.entity.Cuenta;
+import com.springbank.enums.TipoCuenta;
 import com.springbank.exception.ClienteNoEncontrado;
 import com.springbank.exception.CuentaInvalida;
 import com.springbank.exception.CuentaNoEncontrada;
+import com.springbank.exception.TipoCuentaException;
 import com.springbank.repository.ClienteRepository;
 import com.springbank.repository.CuentaRepository;
 import java.time.LocalDateTime;
@@ -28,12 +31,17 @@ public class CuentaService {
     @Autowired
     private TransaccionService transaccionService;
 
+
     @Transactional
     public Cuenta crearCuenta(CuentaRequestDTO cuentaDTO) {
 
         Cliente cliente = traerCliente(cuentaDTO.getClienteId());
 
         validarCuenta(cuentaDTO, cliente);
+
+        if (!cuentaDTO.getTipoCuenta().equals(TipoCuenta.AHORRO) && !cuentaDTO.getTipoCuenta().equals(TipoCuenta.CORRIENTE)) {
+            throw new TipoCuentaException("El tipo de cuenta ingresado [" + cuentaDTO.getTipoCuenta() + "], es invalido");
+        }
 
         Cuenta cuenta = new Cuenta(
                 cuentaDTO.getTipoCuenta(),
@@ -90,16 +98,16 @@ public class CuentaService {
     public List<CuentaResponseDTO> obtenerTodos() {
         List<Cuenta> cuentas = cuentaRepository.findAll();
         List<CuentaResponseDTO> cuentasResponseDTO = new ArrayList<>();
-        
+
         if (cuentas.isEmpty()) {
             throw new CuentaNoEncontrada("No hay cuentas en el sistema. ");
         }
         for (Cuenta cuenta : cuentas) {
             CuentaResponseDTO cuentaResponse = new CuentaResponseDTO(cuenta.getId(), cuenta.getNumeroCuenta(),
-                    cuenta.getTipoCuenta(), cuenta.getSaldo(), 
+                    cuenta.getTipoCuenta(), cuenta.getSaldo(),
                     cuenta.getCliente().getId(), cuenta.getFechaApertura(),
                     cuenta.getVersion());
-            
+
             cuentasResponseDTO.add(cuentaResponse);
         }
         return cuentasResponseDTO;
@@ -111,11 +119,34 @@ public class CuentaService {
             throw new CuentaNoEncontrada("No se encontró cuenta con número: " + numeroCuenta);
         }
         CuentaResponseDTO cuentaResponse = new CuentaResponseDTO(cuenta.getId(), cuenta.getNumeroCuenta(),
-                    cuenta.getTipoCuenta(), cuenta.getSaldo(), 
-                    cuenta.getCliente().getId(), cuenta.getFechaApertura(),
-                    cuenta.getVersion());
-        
+                cuenta.getTipoCuenta(), cuenta.getSaldo(),
+                cuenta.getCliente().getId(), cuenta.getFechaApertura(),
+                cuenta.getVersion());
+
         return cuentaResponse;
     }
-    
+
+    public List<CuentaResponseDTO> obtenerCuentaConUsername(String username) {
+        List<Cuenta> cuentas = cuentaRepository.findByUsername(username);
+        List<CuentaResponseDTO> cuentasResponseDTO = new ArrayList<>();
+        if (cuentas.isEmpty()) {
+            throw new CuentaNoEncontrada("No se encontró ninguna cuenta que tenga un Usuario con username: " + username);
+        }
+        for (Cuenta cuenta : cuentas) {
+            CuentaResponseDTO cuentaResponse = new CuentaResponseDTO(cuenta.getId(), cuenta.getNumeroCuenta(),
+                    cuenta.getTipoCuenta(), cuenta.getSaldo(),
+                    cuenta.getCliente().getId(), cuenta.getFechaApertura(),
+                    cuenta.getVersion());
+            cuentasResponseDTO.add(cuentaResponse);
+        }
+        return cuentasResponseDTO;
+    }
+
+    public boolean esPropietarioOAdmin(Long clienteId, String username, boolean esAdmin) {
+        Cliente cliente = (Cliente) clienteRepository.findById(clienteId)
+                .orElseThrow(() -> new ClienteNoEncontrado("No se encontró cuenta con el id " + clienteId));
+        
+        return esAdmin || cliente.getUsuario().getUsername().equals(username);
+    }
+
 }

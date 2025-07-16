@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @SecurityRequirement(name = "Bearer Authentication")
 @RestController
 @RequestMapping("/api/v1/admin")
-@PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
     
     private final ClienteService clienteService;
@@ -40,6 +39,7 @@ public class AdminController {
     }
 
     @Operation(summary = "Obtener todos los clientes", description = "Devuelve una lista de todos los clientes registrados en el sistema.")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/clientes")
     public ResponseEntity<List<ClienteResponseDTO>> verClientes(){
         List<ClienteResponseDTO> clientes = clienteService.obtenerTodos();
@@ -47,6 +47,7 @@ public class AdminController {
     }
     
     @Operation(summary = "Obtener cliente por dni", description = "Devuelve un cliente de la BBDD por su dni.")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/clientes/dni/{dni}")
     public ResponseEntity<ClienteResponseDTO> verClientePorDNI(@PathVariable String dni){
         ClienteResponseDTO cliente = clienteService.obtenerClientePorDni(dni);
@@ -55,6 +56,7 @@ public class AdminController {
     
     
     @Operation(summary= "Obtener todas las transacciones.", description= "Devuelve una lista todas las transacciones registradas en el sistema.")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/transacciones")
     public ResponseEntity<List<TransaccionResponseDTO>> verTransacciones(){
         List<TransaccionResponseDTO> transacciones = transaccionService.obtenerTodos();
@@ -64,6 +66,7 @@ public class AdminController {
     
     
     @Operation(summary= "Obtener todas las cuentas.", description= "Devuelve una lista todas las cuentas registradas en el sistema.")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/cuentas")
     public ResponseEntity<List<CuentaResponseDTO>> verCuentas(){
         List<CuentaResponseDTO> cuentas = cuentaService.obtenerTodos();
@@ -71,6 +74,7 @@ public class AdminController {
     }
     
     @Operation(summary= "Obtener cuenta por su numero de cuenta.", description= "Devuelve una cuenta registrada en el sistema.")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/cuentas/{numeroCuenta}")
     public ResponseEntity<CuentaResponseDTO> verCuentasPorNumeroCuenta(@PathVariable Long numeroCuenta){
         CuentaResponseDTO cuenta = cuentaService.buscarPorNumeroCuenta(numeroCuenta);
@@ -79,6 +83,7 @@ public class AdminController {
     
     
     @Operation(summary= "Obtener todos los usuarios.", description= "Devuelve una lista de todos los usuarios registradas en el sistema.")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/usuarios")
     public ResponseEntity<List<UsuarioResponseDTO>> verUsuarios(){
         List<UsuarioResponseDTO> usuarios = usuarioService.obtenerTodos();
@@ -87,6 +92,7 @@ public class AdminController {
     
     
     @Operation(summary= "Obtener usuario por su username.", description= "Devuelve un usuario registrado en el sistema a traves de su username.")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/usuarios/username/{username}")
     public ResponseEntity<UsuarioResponseDTO> verUsuarioPorUsername(@PathVariable String username){
         UsuarioResponseDTO usuario = usuarioService.buscarPorUsernameDTO(username);
