@@ -1,6 +1,7 @@
 package com.springbank.service;
 
 import com.springbank.dto.Request.CuentaRequestDTO;
+import com.springbank.dto.Response.CuentaResponseDTO;
 import com.springbank.dto.Response.SaldoResponseDTO;
 import com.springbank.dto.Response.TransaccionResponseDTO;
 import com.springbank.entity.Cliente;
@@ -11,6 +12,7 @@ import com.springbank.exception.CuentaNoEncontrada;
 import com.springbank.repository.ClienteRepository;
 import com.springbank.repository.CuentaRepository;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -85,4 +87,35 @@ public class CuentaService {
         return transaccionService.obtenerTransaccionesPorNumeroCuenta(numeroCuenta);
     }
 
+    public List<CuentaResponseDTO> obtenerTodos() {
+        List<Cuenta> cuentas = cuentaRepository.findAll();
+        List<CuentaResponseDTO> cuentasResponseDTO = new ArrayList<>();
+        
+        if (cuentas.isEmpty()) {
+            throw new CuentaNoEncontrada("No hay cuentas en el sistema. ");
+        }
+        for (Cuenta cuenta : cuentas) {
+            CuentaResponseDTO cuentaResponse = new CuentaResponseDTO(cuenta.getId(), cuenta.getNumeroCuenta(),
+                    cuenta.getTipoCuenta(), cuenta.getSaldo(), 
+                    cuenta.getCliente().getId(), cuenta.getFechaApertura(),
+                    cuenta.getVersion());
+            
+            cuentasResponseDTO.add(cuentaResponse);
+        }
+        return cuentasResponseDTO;
+    }
+
+    public CuentaResponseDTO buscarPorNumeroCuenta(Long numeroCuenta) {
+        Cuenta cuenta = cuentaRepository.numeroCuenta(numeroCuenta);
+        if (cuenta == null) {
+            throw new CuentaNoEncontrada("No se encontró cuenta con número: " + numeroCuenta);
+        }
+        CuentaResponseDTO cuentaResponse = new CuentaResponseDTO(cuenta.getId(), cuenta.getNumeroCuenta(),
+                    cuenta.getTipoCuenta(), cuenta.getSaldo(), 
+                    cuenta.getCliente().getId(), cuenta.getFechaApertura(),
+                    cuenta.getVersion());
+        
+        return cuentaResponse;
+    }
+    
 }

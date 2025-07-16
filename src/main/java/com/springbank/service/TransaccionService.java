@@ -1,6 +1,5 @@
 package com.springbank.service;
 
-
 import com.springbank.dto.Response.TransaccionResponseDTO;
 import com.springbank.entity.Cuenta;
 import com.springbank.entity.Transaccion;
@@ -59,7 +58,6 @@ public class TransaccionService {
 
         return cuenta;
     }
-    
 
     private Transaccion crearTransaccion(BigDecimal monto, TipoTransaccion tipo, Cuenta cuentaOrigen, Cuenta cuentaDestino, String descripcion) {
         Transaccion transaccion;
@@ -90,8 +88,6 @@ public class TransaccionService {
         cuentaRepository.save(cuenta);
 
     }
-
-   
 
     private void validarSaldo(BigDecimal monto, BigDecimal saldo) {
         if (monto.compareTo(saldo) > 0) {
@@ -159,5 +155,28 @@ public class TransaccionService {
         return transferenciasResponseDTO;
 
     }
+
+    public List<TransaccionResponseDTO> obtenerTodos() {
+        List<Transaccion> transacciones = transaccionRepository.findAll();
+        List<TransaccionResponseDTO> transaccionesResponseDTO = new ArrayList<>();
+        
+        if (transacciones.isEmpty()) {
+            throw new TransaccionException("No hay transacciones en el sistema.");
+        }
+        
+        for (Transaccion transaccion : transacciones) {
+            //Creamos un response para cada transaccion.
+            TransaccionResponseDTO transaccionResponseDTO = new TransaccionResponseDTO(transaccion.getId(), transaccion.getMonto(),
+                    transaccion.getTipo(), transaccion.getCuentaOrigen().getId(),
+                    transaccion.getCuentaDestino().getId(),
+                    transaccion.getEstado(), transaccion.getDescripcion(),
+                    transaccion.getFecha(), transaccion.getCuentaOrigen().getNumeroCuenta(),
+                    transaccion.getCuentaDestino().getNumeroCuenta());
+            //Agregamos el response a la lista
+            transaccionesResponseDTO.add(transaccionResponseDTO);
+        }
+        return transaccionesResponseDTO;
+    }
+
 
 }

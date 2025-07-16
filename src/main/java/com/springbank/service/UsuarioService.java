@@ -78,4 +78,18 @@ public class UsuarioService {
         return usuariosResponse;
     }
 
+    public List<UsuarioResponseDTO> obtenerTodos() {
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        List<UsuarioResponseDTO> usuariosResponseDTO = new ArrayList<>();
+        if(usuarios.isEmpty()){
+            throw new UsuarioException("No hay Usuarios en el sistema. ");
+        }
+        for (Usuario usuario : usuarios) {
+            UsuarioResponseDTO usuarioResponseDTO = new UsuarioResponseDTO(usuario.getId(), usuario.getUsername(),
+                    usuario.getRol(), usuario.getCliente().getId());
+            usuariosResponseDTO.add(usuarioResponseDTO);
+        }
+        return usuariosResponseDTO;
+    }
+    
 }
