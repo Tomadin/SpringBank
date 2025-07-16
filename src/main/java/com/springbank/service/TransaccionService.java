@@ -1,13 +1,16 @@
 package com.springbank.service;
 
 import com.springbank.dto.Response.TransaccionResponseDTO;
+import com.springbank.entity.Cliente;
 import com.springbank.entity.Cuenta;
 import com.springbank.entity.Transaccion;
 import com.springbank.enums.TipoTransaccion;
+import com.springbank.exception.ClienteNoEncontrado;
 import com.springbank.exception.CuentaNoEncontrada;
 import com.springbank.exception.MontoInvalidoException;
 import com.springbank.exception.SaldoInsuficienteException;
 import com.springbank.exception.TransaccionException;
+import com.springbank.repository.ClienteRepository;
 import com.springbank.repository.CuentaRepository;
 import com.springbank.repository.TransaccionRepository;
 import java.math.BigDecimal;
@@ -24,6 +27,8 @@ public class TransaccionService {
     private TransaccionRepository transaccionRepository;
     @Autowired
     private CuentaRepository cuentaRepository;
+    @Autowired
+    private ClienteRepository clienteRepository;
 
     @Transactional
     public void realizarDeposito(BigDecimal monto, Long cuentaId) {
@@ -177,6 +182,17 @@ public class TransaccionService {
         }
         return transaccionesResponseDTO;
     }
+    
+    public boolean perteneceCuentaAUsuario(Long numeroCuentaOrigen, String username) {
+        Cuenta cuenta = cuentaRepository.numeroCuenta(numeroCuentaOrigen);
+        if (cuenta == null) {
+            throw new CuentaNoEncontrada("No se encontró cuenta con número: " + numeroCuentaOrigen);
+        }
 
+        Cliente cliente = clienteRepository.findById(cuenta.getCliente().getId())
+                .orElseThrow(() -> new ClienteNoEncontrado("Cliente no encontrado con id: " + cuenta.getCliente().getId()));
 
+        return cliente.getUsuario().getUsername().equals(username);
+    }
+    
 }

@@ -12,6 +12,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,21 +26,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ClienteController {
 
     /**
-     * 
-     *  IMPÓRTANTE: UTILIZAR APIRESPONSE PARA LAS RESPUESTAS DE LA API
-     * 
-     * */
-    
-    
-    
-    
+     *
+     * IMPÓRTANTE: UTILIZAR APIRESPONSE PARA LAS RESPUESTAS DE LA API
+     *
+     *
+     */
     private final ClienteService clienteService;
 
     @Autowired
     public ClienteController(ClienteService clienteService) {
         this.clienteService = clienteService;
     }
-
+    
     @PostMapping
     public ResponseEntity<String> crearCliente(@Valid @RequestBody ClienteRequestDTO clienteRequestDTO) throws Exception {
         try {
@@ -52,16 +51,31 @@ public class ClienteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ClienteResponseDTO> traerClienteId(@PathVariable Long id) throws ClienteNoEncontrado {
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CLIENTE')")
+    public ResponseEntity<?> traerClienteId(@PathVariable Long id, Authentication authentication) throws ClienteNoEncontrado {//Authentication  es una interfaz de SpringSecurity quien esta autenticado con que roles y otros.
+
+        boolean esAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        String username = authentication.getName();
+
         ClienteResponseDTO cliente = clienteService.obtenerClientePorId(id);
+
+        if (cliente == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente no encontrado.");
+        }
+
+        if (!esAdmin && (cliente.getUsuario() == null || !username.equals(cliente.getUsuario().getUsername()))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para acceder a este recurso.");
+        }
+
         return ResponseEntity.ok(cliente);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<ClienteResponseDTO>> traerTodos() {
         List<ClienteResponseDTO> clientes = clienteService.obtenerTodos();
         return ResponseEntity.ok(clientes);
     }
 
-    
 }
