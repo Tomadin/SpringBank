@@ -4,7 +4,6 @@ import com.springbank.dto.Request.UsuarioRequestDTO;
 import com.springbank.dto.Response.UsuarioResponseDTO;
 import com.springbank.entity.Cliente;
 import com.springbank.entity.Usuario;
-import com.springbank.enums.RolUsuario;
 import com.springbank.exception.UsernameNoEncontradoException;
 import com.springbank.exception.UsuarioException;
 import com.springbank.repository.ClienteRepository;
@@ -49,7 +48,7 @@ public class UsuarioService {
 
     public Usuario buscarPorUsername(String username) {
         Usuario user = (Usuario) usuarioRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNoEncontradoException("No se encontró una cuenta con el username: " + username));
+                .orElseThrow(() -> new UsernameNoEncontradoException("No se encontró un usuario con el username: " + username));
         UsuarioResponseDTO userResponse = new UsuarioResponseDTO(user.getId(), user.getUsername(), user.getRol(), user.getCliente().getId());
         return user;
     }
