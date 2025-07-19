@@ -65,11 +65,13 @@ o
 2. Configurá tu base de datos en src/main/resources/application.properties:
 
     spring.datasource.url=jdbc:mysql://localhost:3306/springbank
+   
     spring.datasource.username=tu_usuario
+   
     spring.datasource.password=tu_password
-    Ejecutá con Maven:
+   
 
-3. Ejecutá con Maven:
+4. Ejecutá con Maven:
 ./mvnw clean install
 ./mvnw spring-boot:run
 
