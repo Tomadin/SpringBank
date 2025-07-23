@@ -14,6 +14,7 @@ import com.springbank.exception.EmailInvalido;
 import com.springbank.repository.ClienteRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,24 +23,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ClienteService {
 
-    @Autowired
-    ClienteRepository clienteRepository;
-    @Autowired
-    UsuarioService usuarioService;
-    @Autowired
-    CuentaService cuentaService;
-
-    /*
-    INYECCION POR CONSTRUCTOR ES MAS LIMPIO Y TESTEABLE
     private final ClienteRepository clienteRepository;
     private final UsuarioService usuarioService;
-    
+    private final CuentaService cuentaService;
+
     @Autowired
-    public ClienteService(ClienteRepository clienteRepository, UsuarioService usuarioService) {
+    public ClienteService(ClienteRepository clienteRepository, UsuarioService usuarioService, CuentaService cuentaService) {
         this.clienteRepository = clienteRepository;
         this.usuarioService = usuarioService;
+        this.cuentaService = cuentaService;
     }
-     */
+
     private void validarDNI(String dni) throws DniInvalido {
 
         int dniNum;
@@ -65,15 +59,25 @@ public class ClienteService {
     }
 
     private void validarEmail(String email) throws EmailInvalido {
-        if (email == null || email.length() < 5) {
-            throw new EmailInvalido("El email es demasiado corto.");
+        if (email == null) {
+            throw new EmailInvalido("El email esta vacio.");
         }
 
-        if (!email.contains("@") || !email.contains(".")) {
+        String emailLimpio = email.trim();
+        Optional<Cliente> resultado = clienteRepository.findByEmail(emailLimpio);
+
+        if (!email.equals(email.trim())) {
+            throw new EmailInvalido("El email no debe contener espacios al inicio o al final.");
+        }
+
+        if (emailLimpio.length() < 5) {
+            throw new EmailInvalido("El email es demasiado corto.");
+        }
+        if (!emailLimpio.contains("@") || !emailLimpio.contains(".")) {
             throw new EmailInvalido("El email '" + email + "' no tiene un formato válido.");
         }
 
-        if (clienteRepository.findByEmail(email).isPresent()) {
+        if (resultado.isPresent()) {
             throw new EmailInvalido("El email '" + email + "' ya se encuentra registrado.");
         }
 
@@ -82,7 +86,7 @@ public class ClienteService {
     @Transactional
     public void crearCliente(ClienteRequestDTO clienteRequestDTO) throws DniInvalido, EmailInvalido {
         validarDNI(clienteRequestDTO.getDni());
-        validarEmail(clienteRequestDTO.getEmail());
+        validarEmail(clienteRequestDTO.getEmail().toLowerCase());
         Cliente cliente = new Cliente(
                 clienteRequestDTO.getNombre(),
                 clienteRequestDTO.getApellido(),
@@ -133,7 +137,7 @@ public class ClienteService {
     private ClienteResponseDTO generarClienteResponseDTO(Cliente cliente) {
 
         UsuarioResponseDTO usuarioDTO = null;
-        
+
         if (cliente.getUsuario() != null) {
             Usuario usuarioEntidad = cliente.getUsuario();
             usuarioDTO = new UsuarioResponseDTO(
@@ -143,7 +147,7 @@ public class ClienteService {
                     usuarioEntidad.getCliente().getId()
             );
         }
-        
+
         List<Long> cuentasIdList = cliente.getCuentas() //cliente.getCuentas trae objetos Cuenta y debemos sacar los id, por eso utilizamos un stream, map y collect para tener una lista con los ids
                 .stream()
                 .map(Cuenta::getId)
@@ -164,7 +168,7 @@ public class ClienteService {
         for (Cliente cliente : clientes) {
             ClienteResponseDTO clienteResponseDTO = generarClienteResponseDTO(cliente);
             clientesResponseDTOs.add(clienteResponseDTO);
-       }
+        }
         return clientesResponseDTOs;
     }
 

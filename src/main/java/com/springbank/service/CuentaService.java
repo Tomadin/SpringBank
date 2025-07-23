@@ -31,9 +31,12 @@ public class CuentaService {
     @Autowired
     private TransaccionService transaccionService;
 
-
     @Transactional
     public Cuenta crearCuenta(CuentaRequestDTO cuentaDTO) {
+
+        if (cuentaDTO.getTipoCuenta() == null) {
+            throw new TipoCuentaException("El tipo de cuenta es invalido o nulo.");
+        }
 
         Cliente cliente = traerCliente(cuentaDTO.getClienteId());
 
@@ -143,10 +146,13 @@ public class CuentaService {
     }
 
     public boolean esPropietarioOAdmin(Long clienteId, String username, boolean esAdmin) {
+        if (esAdmin) {
+            return true;
+        }
         Cliente cliente = (Cliente) clienteRepository.findById(clienteId)
                 .orElseThrow(() -> new ClienteNoEncontrado("No se encontró cuenta con el id " + clienteId));
-        
-        return esAdmin || cliente.getUsuario().getUsername().equals(username);
+
+        return cliente.getUsuario().getUsername().equals(username);
     }
 
 }
