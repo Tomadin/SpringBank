@@ -8,6 +8,9 @@ import com.springbank.dto.Response.TransaccionResponseDTO;
 import com.springbank.dto.Response.UsuarioResponseDTO;
 import com.springbank.service.CuentaService;
 import com.springbank.service.UsuarioService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,6 +37,12 @@ public class CuentaController {
         this.usuarioService = usuarioService;
     }
 
+    
+    @Operation(summary = "Crear una Cuenta", description = "Un admin o un cliente pueden crear una cuenta, con el id del dueño de la misma, el clienteId.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Cuenta creada correctamente."),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos.")
+    })
     @PreAuthorize("hasRole('ADMIN') or hasRole('CLIENTE')")
     @PostMapping
     public ResponseEntity<?> crearCuenta(@RequestBody CuentaRequestDTO cuentaRequestDTO, Authentication authentication) {
@@ -55,6 +64,11 @@ public class CuentaController {
                 .body("Cuenta creado correctamente.");
     }
 
+    @Operation(summary = "Ver saldo de una cuenta", description = "Ver el saldo de una cuenta, a traves de su numeroCuenta. Un Cliente solo puede ver su saldo y un admin el de cualquier cliente.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Saldo traido correctamente."),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos.")
+    })
     @PreAuthorize("hasRole('ADMIN') or hasRole('CLIENTE')")
     @GetMapping("/{numeroCuenta}/saldo")
     public ResponseEntity<?> traerSaldoPorNumeroCuenta(@PathVariable Long numeroCuenta, Authentication authentication) {
@@ -77,7 +91,12 @@ public class CuentaController {
 
         return ResponseEntity.ok(saldoResponseDTO);
     }
-
+    
+    @Operation(summary = "Ver transacciones de una Cuenta", description = "Ver las transacciones de una cuenta, a traves de su numeroCuenta. Un Cliente solo puede ver sus transacciones y un admin las de cualquier cliente.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Transacciones traidas correctamente."),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos.")
+    })
     @PreAuthorize("hasRole('ADMIN') or hasRole('CLIENTE')")
     @GetMapping("/{numeroCuenta}/transacciones")
     public ResponseEntity<?> traerTransaccionesPorNumeroCuenta(@PathVariable Long numeroCuenta, Authentication authentication) {

@@ -2,6 +2,9 @@ package com.springbank.controller;
 
 import com.springbank.dto.Response.UsuarioResponseDTO;
 import com.springbank.service.UsuarioService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,11 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
     
+    @Operation(summary = "Traer los usuarios", description = "Un admin puede traer todos los usuarios de la BBDD.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Usuarios traidos correctamente."),
+        @ApiResponse(responseCode = "400", description = "Solicitud inválida.")
+    })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<UsuarioResponseDTO>> traerTodos() {
@@ -29,6 +37,11 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarios);
     }
     
+    @Operation(summary = "Traer usuario", description = "Traer un usuario de la BBDD, a traves de su username.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Usuarios traidos correctamente."),
+        @ApiResponse(responseCode = "400", description = "Solicitud inválida.")
+    })
     @PreAuthorize("hasRole('ADMIN') or (hasRole('CLIENTE') and #username == authentication.name)")
     @GetMapping("/{username}")
     public ResponseEntity<UsuarioResponseDTO> traerUsuarioUsername(@PathVariable String username){

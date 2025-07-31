@@ -7,6 +7,9 @@ import com.springbank.exception.DniInvalido;
 import com.springbank.exception.EmailInvalido;
 
 import com.springbank.service.ClienteService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/api/v1/clientes")
 public class ClienteController {
 
-    /**
-     *
-     * IMPÓRTANTE: UTILIZAR APIRESPONSE PARA LAS RESPUESTAS DE LA API
-     *
-     *
-     */
+    
     private final ClienteService clienteService;
 
     @Autowired
@@ -38,6 +36,11 @@ public class ClienteController {
         this.clienteService = clienteService;
     }
     
+    @Operation(summary = "Crear Cliente", description = "Creamos un cliente en la BBDD con sus datos personales.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Cliente creado correctamente."),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos.")
+    })
     @PostMapping
     public ResponseEntity<String> crearCliente(@Valid @RequestBody ClienteRequestDTO clienteRequestDTO) throws Exception {
         try {
@@ -50,6 +53,11 @@ public class ClienteController {
         }
     }
 
+    @Operation(summary = "Traer Cliente", description = "Traemos un cliente en la BBDD, a traves de su id. Un cliente solo puede leer sus datos, un admin puede ver cualquier cliente.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Cliente traido correctamente."),
+        @ApiResponse(responseCode = "400", description = "Id no encontrado.")
+    })
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('CLIENTE')")
     public ResponseEntity<?> traerClienteId(@PathVariable Long id, Authentication authentication) throws ClienteNoEncontrado {//Authentication  es una interfaz de SpringSecurity quien esta autenticado con que roles y otros.
@@ -70,7 +78,12 @@ public class ClienteController {
 
         return ResponseEntity.ok(cliente);
     }
-
+    
+    @Operation(summary = "Traer todos los Clientes", description = "Un admin trae todos los clientes de la BBDD.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Clientes traidos correctamente."),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos.")
+    })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<ClienteResponseDTO>> traerTodos() {

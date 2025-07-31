@@ -10,6 +10,8 @@ import com.springbank.service.CuentaService;
 import com.springbank.service.TransaccionService;
 import com.springbank.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -39,6 +41,10 @@ public class AdminController {
     }
 
     @Operation(summary = "Obtener todos los clientes", description = "Devuelve una lista de todos los clientes registrados en el sistema.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Clientes traido correctamente."),
+        @ApiResponse(responseCode = "400", description = "Error en la solicitud.")
+    })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/clientes")
     public ResponseEntity<List<ClienteResponseDTO>> verClientes(){
@@ -47,6 +53,10 @@ public class AdminController {
     }
     
     @Operation(summary = "Obtener cliente por dni", description = "Devuelve un cliente de la BBDD por su dni.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Cliente traido correctamente."),
+        @ApiResponse(responseCode = "400", description = "Datos invalidos.")
+    })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/clientes/dni/{dni}")
     public ResponseEntity<ClienteResponseDTO> verClientePorDNI(@PathVariable String dni){
@@ -56,6 +66,10 @@ public class AdminController {
     
     
     @Operation(summary= "Obtener todas las transacciones.", description= "Devuelve una lista todas las transacciones registradas en el sistema.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Transacciones traidas correctamente."),
+        @ApiResponse(responseCode = "400", description = "Error en la solicitud.")
+    })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/transacciones")
     public ResponseEntity<List<TransaccionResponseDTO>> verTransacciones(){
@@ -66,6 +80,10 @@ public class AdminController {
     
     
     @Operation(summary= "Obtener todas las cuentas.", description= "Devuelve una lista todas las cuentas registradas en el sistema.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Cuentas traidas correctamente."),
+        @ApiResponse(responseCode = "400", description = "Error en la solicitud.")
+    })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/cuentas")
     public ResponseEntity<List<CuentaResponseDTO>> verCuentas(){
@@ -74,6 +92,10 @@ public class AdminController {
     }
     
     @Operation(summary= "Obtener cuenta por su numero de cuenta.", description= "Devuelve una cuenta registrada en el sistema.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Cuenta traida correctamente."),
+        @ApiResponse(responseCode = "400", description = "Error en la solicitud.")
+    })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/cuentas/{numeroCuenta}")
     public ResponseEntity<CuentaResponseDTO> verCuentasPorNumeroCuenta(@PathVariable Long numeroCuenta){
@@ -83,6 +105,10 @@ public class AdminController {
     
     
     @Operation(summary= "Obtener todos los usuarios.", description= "Devuelve una lista de todos los usuarios registradas en el sistema.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Usuarios traidos correctamente."),
+        @ApiResponse(responseCode = "400", description = "Error en la solicitud.")
+    })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/usuarios")
     public ResponseEntity<List<UsuarioResponseDTO>> verUsuarios(){
@@ -92,6 +118,10 @@ public class AdminController {
     
     
     @Operation(summary= "Obtener usuario por su username.", description= "Devuelve un usuario registrado en el sistema a traves de su username.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Usuario traido correctamente."),
+        @ApiResponse(responseCode = "400", description = "Error en la solicitud.")
+    })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/usuarios/username/{username}")
     public ResponseEntity<UsuarioResponseDTO> verUsuarioPorUsername(@PathVariable String username){
