@@ -1,12 +1,18 @@
 package com.springbank.service;
 
+import com.springbank.dto.Request.ClienteRequestDTO;
 import com.springbank.dto.Request.LoginRequestDTO;
 import com.springbank.dto.Request.RegistrarRequestDTO;
+import com.springbank.dto.Request.UsuarioClienteRequestDTO;
 import com.springbank.dto.Request.UsuarioRequestDTO;
+import com.springbank.dto.Response.ClienteResponseDTO;
 import com.springbank.dto.Response.TokenResponseDTO;
 import com.springbank.entity.Token;
 import com.springbank.entity.Usuario;
+import com.springbank.enums.RolUsuario;
 import com.springbank.enums.TokenTipoEnum;
+import com.springbank.exception.DniInvalido;
+import com.springbank.exception.EmailInvalido;
 import com.springbank.exception.TokenInvalidoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +28,8 @@ public class AuthService {
     @Autowired
     private UsuarioService usuarioService;
     @Autowired
+    private ClienteService clienteService;
+    @Autowired
     private JwtService jwtService; //completar
     @Autowired
     private TokenRepository tokenRepository;
@@ -35,7 +43,25 @@ public class AuthService {
         saveUserToken(usuario, tokenJwt);
         return new TokenResponseDTO(tokenJwt, refreshToken);
     }
+    
+    public TokenResponseDTO registrarClienteUsuario(UsuarioClienteRequestDTO request) throws DniInvalido, EmailInvalido{
+        //Creamos el Cliente
+        ClienteRequestDTO clienteRequestDTO = new ClienteRequestDTO(request.getNombre(),
+                request.getApellido(), request.getEmail(), request.getDni());
+        clienteService.crearCliente(clienteRequestDTO);
+        //Obtenemos la respuesta
+        ClienteResponseDTO clienteCreadoDTo = clienteService.obtenerClientePorDni(request.getDni());
 
+        // Creamos el usuario y asignamos el id del cliente que creamos anteriormente.
+        UsuarioRequestDTO userDTO = new UsuarioRequestDTO(request.getUsername(), request.getPassword(), request.getRol(), clienteCreadoDTo.getId()); 
+        Usuario usuario = usuarioService.crearUsuario(userDTO);  //Crear JWTService y metodo generateToken(usuario);
+        String tokenJwt = jwtService.generarToken(usuario);
+        String refreshToken = jwtService.generarRefreshToken(usuario);
+        saveUserToken(usuario, tokenJwt);
+        return new TokenResponseDTO(tokenJwt, refreshToken);
+    }
+    
+    
     public TokenResponseDTO login(LoginRequestDTO request) {
         authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

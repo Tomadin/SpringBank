@@ -15,6 +15,7 @@ public class UsuarioRequestDTO { //utilizar @Valid en el controlador para valida
     final private RolUsuario rol;
     @NotNull
     final private Long clienteId;
+    
 
     public UsuarioRequestDTO(String username, String password, RolUsuario rol, Long clienteId) {
         this.username = username;

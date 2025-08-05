@@ -2,8 +2,12 @@ package com.springbank.controller;
 
 import com.springbank.dto.Request.LoginRequestDTO;
 import com.springbank.dto.Request.RegistrarRequestDTO;
+import com.springbank.dto.Request.UsuarioClienteRequestDTO;
 import com.springbank.dto.Request.UsuarioRequestDTO;
 import com.springbank.dto.Response.TokenResponseDTO;
+import com.springbank.enums.RolUsuario;
+import com.springbank.exception.DniInvalido;
+import com.springbank.exception.EmailInvalido;
 import com.springbank.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,7 +39,7 @@ public class AuthController {
     }
 
     @Operation(
-            summary = "Registrar de Usuario",
+            summary = "Registrar Usuario",
             description = "Registra un nuevo usuario. Retorna un token JWT si el registro es exitoso."
     )
     @ApiResponses(value = {
@@ -48,10 +52,29 @@ public class AuthController {
             required = true,
             content = @Content(schema = @Schema(implementation = UsuarioRequestDTO.class))
     )
-    @PostMapping("/registrar")
+    @PostMapping("/registrar-usuario")
     public ResponseEntity<TokenResponseDTO> register(@RequestBody UsuarioRequestDTO request) { //crear atributos de TokenDTO, RegistroRequestDTO y el service de authService
-        System.out.println(secretKey);
         final TokenResponseDTO token = authService.registrar(request);
+        return ResponseEntity.ok(token);
+    }
+    
+    @Operation(
+            summary = "Registrar Cliente con su Usuario",
+            description = "Registra un nuevo Cliente y asignarle un nuevo usuario. Retorna un token JWT si el registro es exitoso."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Cliente y Usuario creados correctamente", content = @Content(schema = @Schema(implementation = TokenResponseDTO.class))),
+        @ApiResponse(responseCode = "400", description = "Solicitud inválida (datos faltantes o inválidos)", content = @Content),
+        @ApiResponse(responseCode = "409", description = "El usuario ya existe", content = @Content)
+    })
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Datos necesarios para registrar al usuario y asignarlo a un cliente creado previamente.",
+            required = true,
+            content = @Content(schema = @Schema(implementation = UsuarioClienteRequestDTO.class))
+    )
+    @PostMapping("/registrar-cliente-usuario")
+    public ResponseEntity<TokenResponseDTO> registerClientAndUser(@RequestBody UsuarioClienteRequestDTO request) throws DniInvalido, EmailInvalido { //crear atributos de TokenDTO, RegistroRequestDTO y el service de authService
+        final TokenResponseDTO token = authService.registrarClienteUsuario(request);
         return ResponseEntity.ok(token);
     }
 
