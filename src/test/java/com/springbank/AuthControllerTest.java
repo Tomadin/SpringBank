@@ -85,7 +85,7 @@ public class AuthControllerTest {
         UsuarioRequestDTO request = new UsuarioRequestDTO("usuarioNuevo", "123456", RolUsuario.CLIENTE, 1L);
         when(authService.registrar(any(UsuarioRequestDTO.class))).thenReturn(tokenResponse);
 
-        mockMvc.perform(post("/api/v1/auth/registrar")
+        mockMvc.perform(post("/api/v1/auth/registrar-usuario")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isOk())
