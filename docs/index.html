@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpringBank — Motor Bancario RESTful</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;1,400&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ===== NAV ===== -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="#inicio" class="nav__brand">
+        <span class="nav__logo-mark">SB</span>
+        <span class="nav__logo-name">SpringBank</span>
+      </a>
+      <ul class="nav__links">
+        <li><a href="#features">Funcionalidades</a></li>
+        <li><a href="#stack">Stack</a></li>
+        <li><a href="#endpoints">API</a></li>
+        <li><a href="#seguridad">Seguridad</a></li>
+      </ul>
+      <div class="nav__actions">
+        <a href="https://github.com/Tomadin/SpringBank" class="btn btn--ghost btn--sm" target="_blank" rel="noopener">
+          <svg class="btn__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <header class="hero" id="inicio">
+    <div class="hero__texture" aria-hidden="true"></div>
+    <div class="hero__container">
+      <div class="hero__main">
+        <div class="hero__badge">
+          <span class="hero__badge-dot" aria-hidden="true"></span>
+          Proyecto de práctica · Spring Boot 3.5 · Java 17
+        </div>
+        <h1 class="hero__title">
+          Spring<span class="hero__title-green">Bank</span>
+        </h1>
+        <p class="hero__subtitle">Motor bancario RESTful con Spring Security</p>
+        <p class="hero__desc">
+          Sistema backend de gestión bancaria construido con Spring Boot. Implementa autenticación JWT,
+          gestión de cuentas bancarias, transacciones seguras y un panel de administración completo.
+          Desplegable con Docker en minutos.
+        </p>
+        <div class="hero__cta">
+          <a href="https://github.com/Tomadin/SpringBank" class="btn btn--primary btn--lg" target="_blank" rel="noopener">
+            Ver en GitHub
+          </a>
+          <a href="#features" class="btn btn--outline btn--lg">
+            Explorar proyecto
+          </a>
+        </div>
+      </div>
+
+      <div class="hero__stats" aria-label="Cifras del proyecto">
+        <div class="stat-card">
+          <span class="stat-card__num" data-target="83">0</span>
+          <span class="stat-card__label">Tests unitarios</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-card__num" data-target="15">0</span>
+          <span class="stat-card__label">Endpoints REST</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-card__num" data-target="6">0</span>
+          <span class="stat-card__label">Capas de seguridad</span>
+        </div>
+        <div class="stat-card stat-card--full">
+          <span class="stat-card__num">100%</span>
+          <span class="stat-card__label">Docker ready</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__scroll-hint" aria-hidden="true">
+      <span>Desplazar</span>
+      <svg viewBox="0 0 16 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="1" y="1" width="14" height="22" rx="7"/>
+        <line x1="8" y1="6" x2="8" y2="10"/>
+      </svg>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ===== FEATURES ===== -->
+    <section class="section section--cream" id="features">
+      <div class="container">
+        <header class="section__header reveal">
+          <span class="section__tag">Funcionalidades</span>
+          <h2 class="section__title">Qué puede hacer SpringBank</h2>
+          <p class="section__desc">
+            Un motor bancario completo con gestión de usuarios, cuentas y transacciones.
+            Control de acceso por roles y registro de auditoría en cada operación.
+          </p>
+        </header>
+
+        <div class="features-grid">
+
+          <article class="feature-card reveal">
+            <div class="feature-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 40 40" fill="none">
+                <circle cx="20" cy="20" r="19" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M14 20a6 6 0 1 1 12 0M20 26v-3M17 29h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="feature-card__title">Autenticación JWT</h3>
+            <p class="feature-card__desc">
+              Inicio de sesión seguro con access token de corta duración y refresh token persistente.
+              Revocación instantánea al cerrar sesión. Sin sesiones en servidor.
+            </p>
+            <ul class="tag-list" aria-label="Tecnologías">
+              <li class="tag">JWT</li>
+              <li class="tag">BCrypt</li>
+              <li class="tag">Refresh Token</li>
+            </ul>
+          </article>
+
+          <article class="feature-card reveal">
+            <div class="feature-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 40 40" fill="none">
+                <rect x="6" y="11" width="28" height="20" rx="3" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M6 17h28" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M12 23h4M12 26h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="feature-card__title">Gestión de Cuentas</h3>
+            <p class="feature-card__desc">
+              Creación de cuentas de ahorro y corriente con número único generado de forma segura.
+              Consulta de saldo y control de acceso por propietario.
+            </p>
+            <ul class="tag-list" aria-label="Tecnologías">
+              <li class="tag">JPA</li>
+              <li class="tag">MySQL</li>
+              <li class="tag">SecureRandom</li>
+            </ul>
+          </article>
+
+          <article class="feature-card reveal">
+            <div class="feature-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 40 40" fill="none">
+                <path d="M10 20h20M24 14l6 6-6 6M16 14l-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 class="feature-card__title">Transacciones</h3>
+            <p class="feature-card__desc">
+              Depósitos, retiros y transferencias entre cuentas con validación de saldo
+              e historial completo. Cada operación queda registrada con fecha y descripción.
+            </p>
+            <ul class="tag-list" aria-label="Tecnologías">
+              <li class="tag">@Transactional</li>
+              <li class="tag">BigDecimal</li>
+              <li class="tag">Historial</li>
+            </ul>
+          </article>
+
+          <article class="feature-card reveal">
+            <div class="feature-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 40 40" fill="none">
+                <circle cx="20" cy="15" r="5" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M10 31c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M28 10l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 class="feature-card__title">Control de Roles</h3>
+            <p class="feature-card__desc">
+              Dos roles diferenciados: <strong>CLIENTE</strong> y <strong>ADMIN</strong>.
+              Cada endpoint valida que el usuario solo pueda operar con sus propios recursos.
+            </p>
+            <ul class="tag-list" aria-label="Tecnologías">
+              <li class="tag">@PreAuthorize</li>
+              <li class="tag">RBAC</li>
+              <li class="tag">Spring Security</li>
+            </ul>
+          </article>
+
+          <article class="feature-card reveal">
+            <div class="feature-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 40 40" fill="none">
+                <path d="M8 12h24M8 20h16M8 28h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="30" cy="27" r="6" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M27 27l2 2 4-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 class="feature-card__title">Documentación API</h3>
+            <p class="feature-card__desc">
+              Documentación interactiva generada automáticamente con OpenAPI 3 y Swagger UI.
+              Permite probar todos los endpoints directamente desde el navegador.
+            </p>
+            <ul class="tag-list" aria-label="Tecnologías">
+              <li class="tag">OpenAPI 3</li>
+              <li class="tag">Swagger UI</li>
+              <li class="tag">springdoc</li>
+            </ul>
+          </article>
+
+          <article class="feature-card reveal">
+            <div class="feature-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 40 40" fill="none">
+                <rect x="8" y="8" width="24" height="24" rx="3" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M14 20l4 4 8-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 class="feature-card__title">Pruebas Automatizadas</h3>
+            <p class="feature-card__desc">
+              Suite de 83 tests unitarios que cubren servicios y controladores.
+              Uso de Mockito para aislar dependencias y JUnit 5 para las aserciones.
+            </p>
+            <ul class="tag-list" aria-label="Tecnologías">
+              <li class="tag">JUnit 5</li>
+              <li class="tag">Mockito</li>
+              <li class="tag">MockMvc</li>
+            </ul>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== STACK ===== -->
+    <section class="section section--white" id="stack">
+      <div class="container">
+        <header class="section__header reveal">
+          <span class="section__tag">Tecnologías</span>
+          <h2 class="section__title">Stack utilizado</h2>
+        </header>
+
+        <div class="stack-grid">
+          <div class="stack-item reveal">
+            <div class="stack-item__badge stack-item__badge--green">Core</div>
+            <h3 class="stack-item__name">Spring Boot 3.5</h3>
+            <p class="stack-item__desc">Framework principal. Autoconfiguración, inyección de dependencias, ciclo de vida de beans.</p>
+          </div>
+          <div class="stack-item reveal">
+            <div class="stack-item__badge stack-item__badge--green">Seguridad</div>
+            <h3 class="stack-item__name">Spring Security 6</h3>
+            <p class="stack-item__desc">Filtros JWT personalizados, gestión de roles, protección de endpoints.</p>
+          </div>
+          <div class="stack-item reveal">
+            <div class="stack-item__badge stack-item__badge--slate">Persistencia</div>
+            <h3 class="stack-item__name">Spring Data JPA</h3>
+            <p class="stack-item__desc">ORM con Hibernate. Relaciones OneToOne, OneToMany. Queries JPQL custom.</p>
+          </div>
+          <div class="stack-item reveal">
+            <div class="stack-item__badge stack-item__badge--slate">Base de Datos</div>
+            <h3 class="stack-item__name">MySQL 8</h3>
+            <p class="stack-item__desc">Motor relacional principal. Schema generado por Hibernate en desarrollo.</p>
+          </div>
+          <div class="stack-item reveal">
+            <div class="stack-item__badge stack-item__badge--slate">Tokens</div>
+            <h3 class="stack-item__name">JJWT 0.11</h3>
+            <p class="stack-item__desc">Generación y validación de tokens JWT firmados con HMAC-SHA256.</p>
+          </div>
+          <div class="stack-item reveal">
+            <div class="stack-item__badge stack-item__badge--blue">Despliegue</div>
+            <h3 class="stack-item__name">Docker</h3>
+            <p class="stack-item__desc">Multi-stage build. Imagen final ~200MB. Orquestación con Docker Compose.</p>
+          </div>
+          <div class="stack-item reveal">
+            <div class="stack-item__badge stack-item__badge--blue">Documentación</div>
+            <h3 class="stack-item__name">OpenAPI / Swagger</h3>
+            <p class="stack-item__desc">Documentación interactiva autogenerada. Autenticación Bearer integrada en la UI.</p>
+          </div>
+          <div class="stack-item reveal">
+            <div class="stack-item__badge stack-item__badge--slate">Testing</div>
+            <h3 class="stack-item__name">JUnit 5 + Mockito</h3>
+            <p class="stack-item__desc">Tests unitarios e integración. MockMvc para pruebas de controladores HTTP.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ENDPOINTS ===== -->
+    <section class="section section--dark" id="endpoints">
+      <div class="container">
+        <header class="section__header section__header--light reveal">
+          <span class="section__tag section__tag--light">API</span>
+          <h2 class="section__title">Endpoints principales</h2>
+          <p class="section__desc">
+            Todos los recursos siguen la convención <code>/api/v1/{recurso}</code>.
+            Los endpoints protegidos requieren el header <code>Authorization: Bearer &lt;token&gt;</code>.
+          </p>
+        </header>
+
+        <div class="endpoints-filters reveal" role="group" aria-label="Filtrar por módulo">
+          <button class="filter-btn filter-btn--active" data-filter="all">Todos</button>
+          <button class="filter-btn" data-filter="auth">Auth</button>
+          <button class="filter-btn" data-filter="clientes">Clientes</button>
+          <button class="filter-btn" data-filter="cuentas">Cuentas</button>
+          <button class="filter-btn" data-filter="transacciones">Transacciones</button>
+        </div>
+
+        <div class="endpoints-table reveal" role="table" aria-label="Tabla de endpoints">
+          <div class="endpoints-table__head" role="row">
+            <span role="columnheader">Método</span>
+            <span role="columnheader">Endpoint</span>
+            <span role="columnheader">Descripción</span>
+            <span role="columnheader">Acceso</span>
+          </div>
+
+          <div class="endpoint-row" data-group="auth" role="row">
+            <span class="method method--post" role="cell">POST</span>
+            <code class="endpoint-path" role="cell">/api/v1/auth/registrar-cliente-usuario</code>
+            <span class="endpoint-desc" role="cell">Registro de cliente y usuario</span>
+            <span class="access access--public" role="cell">Público</span>
+          </div>
+          <div class="endpoint-row" data-group="auth" role="row">
+            <span class="method method--post" role="cell">POST</span>
+            <code class="endpoint-path" role="cell">/api/v1/auth/login</code>
+            <span class="endpoint-desc" role="cell">Inicio de sesión, retorna tokens JWT</span>
+            <span class="access access--public" role="cell">Público</span>
+          </div>
+          <div class="endpoint-row" data-group="auth" role="row">
+            <span class="method method--post" role="cell">POST</span>
+            <code class="endpoint-path" role="cell">/api/v1/auth/refresh</code>
+            <span class="endpoint-desc" role="cell">Renovar access token</span>
+            <span class="access access--client" role="cell">Token</span>
+          </div>
+
+          <div class="endpoint-row" data-group="clientes" role="row">
+            <span class="method method--post" role="cell">POST</span>
+            <code class="endpoint-path" role="cell">/api/v1/clientes</code>
+            <span class="endpoint-desc" role="cell">Crear cliente</span>
+            <span class="access access--admin" role="cell">ADMIN</span>
+          </div>
+          <div class="endpoint-row" data-group="clientes" role="row">
+            <span class="method method--get" role="cell">GET</span>
+            <code class="endpoint-path" role="cell">/api/v1/clientes/{id}</code>
+            <span class="endpoint-desc" role="cell">Ver datos del cliente</span>
+            <span class="access access--both" role="cell">Cliente / Admin</span>
+          </div>
+          <div class="endpoint-row" data-group="clientes" role="row">
+            <span class="method method--get" role="cell">GET</span>
+            <code class="endpoint-path" role="cell">/api/v1/clientes/all</code>
+            <span class="endpoint-desc" role="cell">Listar todos los clientes</span>
+            <span class="access access--admin" role="cell">ADMIN</span>
+          </div>
+
+          <div class="endpoint-row" data-group="cuentas" role="row">
+            <span class="method method--post" role="cell">POST</span>
+            <code class="endpoint-path" role="cell">/api/v1/cuentas</code>
+            <span class="endpoint-desc" role="cell">Crear cuenta bancaria</span>
+            <span class="access access--both" role="cell">Cliente / Admin</span>
+          </div>
+          <div class="endpoint-row" data-group="cuentas" role="row">
+            <span class="method method--get" role="cell">GET</span>
+            <code class="endpoint-path" role="cell">/api/v1/cuentas/{num}/saldo</code>
+            <span class="endpoint-desc" role="cell">Consultar saldo</span>
+            <span class="access access--both" role="cell">Cliente / Admin</span>
+          </div>
+          <div class="endpoint-row" data-group="cuentas" role="row">
+            <span class="method method--get" role="cell">GET</span>
+            <code class="endpoint-path" role="cell">/api/v1/cuentas/{num}/transacciones</code>
+            <span class="endpoint-desc" role="cell">Historial de movimientos</span>
+            <span class="access access--both" role="cell">Cliente / Admin</span>
+          </div>
+
+          <div class="endpoint-row" data-group="transacciones" role="row">
+            <span class="method method--post" role="cell">POST</span>
+            <code class="endpoint-path" role="cell">/api/v1/transacciones/depositar</code>
+            <span class="endpoint-desc" role="cell">Depósito en cuenta propia</span>
+            <span class="access access--client" role="cell">CLIENTE</span>
+          </div>
+          <div class="endpoint-row" data-group="transacciones" role="row">
+            <span class="method method--post" role="cell">POST</span>
+            <code class="endpoint-path" role="cell">/api/v1/transacciones/retirar</code>
+            <span class="endpoint-desc" role="cell">Retiro de cuenta propia</span>
+            <span class="access access--client" role="cell">CLIENTE</span>
+          </div>
+          <div class="endpoint-row" data-group="transacciones" role="row">
+            <span class="method method--post" role="cell">POST</span>
+            <code class="endpoint-path" role="cell">/api/v1/transacciones/transferir</code>
+            <span class="endpoint-desc" role="cell">Transferencia entre cuentas</span>
+            <span class="access access--client" role="cell">CLIENTE</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SEGURIDAD ===== -->
+    <section class="section section--cream" id="seguridad">
+      <div class="container">
+        <header class="section__header reveal">
+          <span class="section__tag">Seguridad</span>
+          <h2 class="section__title">Capas de protección</h2>
+          <p class="section__desc">
+            La seguridad no es un módulo: está integrada en cada capa de la aplicación.
+          </p>
+        </header>
+
+        <div class="security-grid">
+          <div class="security-item reveal">
+            <span class="security-item__num">01</span>
+            <div class="security-item__content">
+              <h3>Filtro JWT por request</h3>
+              <p>Cada petición HTTP pasa por <code>JwtAuthenticationFilter</code>, que valida el token, verifica que no esté revocado y carga el contexto de seguridad antes de llegar al controlador.</p>
+            </div>
+          </div>
+          <div class="security-item reveal">
+            <span class="security-item__num">02</span>
+            <div class="security-item__content">
+              <h3>Tokens revocables en base de datos</h3>
+              <p>Cada token se almacena con su estado (<em>expired</em>, <em>revoked</em>). Al hacer logout o login nuevo, todos los tokens anteriores quedan invalidados inmediatamente.</p>
+            </div>
+          </div>
+          <div class="security-item reveal">
+            <span class="security-item__num">03</span>
+            <div class="security-item__content">
+              <h3>Contraseñas con BCrypt</h3>
+              <p>Ninguna contraseña se almacena en texto plano. BCrypt aplica un factor de costo adaptativo y un salt automático por cada hash generado.</p>
+            </div>
+          </div>
+          <div class="security-item reveal">
+            <span class="security-item__num">04</span>
+            <div class="security-item__content">
+              <h3>Validación de propiedad de recursos</h3>
+              <p>Un cliente solo puede operar con sus propias cuentas. Cada endpoint de transacción verifica que la cuenta pertenezca al usuario autenticado antes de ejecutar la operación.</p>
+            </div>
+          </div>
+          <div class="security-item reveal">
+            <span class="security-item__num">05</span>
+            <div class="security-item__content">
+              <h3>Validación de entrada (Bean Validation)</h3>
+              <p>Todos los DTOs de entrada usan anotaciones de validación (<code>@NotBlank</code>, <code>@NotNull</code>, <code>@Size</code>, <code>@Positive</code>). Errores de validación retornan respuestas estructuradas con HTTP 400.</p>
+            </div>
+          </div>
+          <div class="security-item reveal">
+            <span class="security-item__num">06</span>
+            <div class="security-item__content">
+              <h3>Manejo centralizado de errores</h3>
+              <p><code>GlobalExceptionHandler</code> captura todas las excepciones y devuelve respuestas JSON coherentes con código de error, mensaje y ruta — sin stack traces expuestos.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ARQUITECTURA ===== -->
+    <section class="section section--white" id="arquitectura">
+      <div class="container">
+        <header class="section__header reveal">
+          <span class="section__tag">Arquitectura</span>
+          <h2 class="section__title">Estructura del proyecto</h2>
+        </header>
+
+        <div class="arch-layout reveal">
+          <div class="arch-diagram">
+            <div class="arch-layer arch-layer--client">
+              <span class="arch-layer__label">Cliente (HTTP)</span>
+            </div>
+            <div class="arch-arrow" aria-hidden="true">↓</div>
+            <div class="arch-layer arch-layer--filter">
+              <span class="arch-layer__label">JwtAuthenticationFilter</span>
+              <span class="arch-layer__sub">Valida token · Carga contexto de seguridad</span>
+            </div>
+            <div class="arch-arrow" aria-hidden="true">↓</div>
+            <div class="arch-layer arch-layer--controller">
+              <span class="arch-layer__label">Controllers</span>
+              <span class="arch-layer__sub">Auth · Clientes · Cuentas · Transacciones · Admin</span>
+            </div>
+            <div class="arch-arrow" aria-hidden="true">↓</div>
+            <div class="arch-layer arch-layer--service">
+              <span class="arch-layer__label">Services</span>
+              <span class="arch-layer__sub">Lógica de negocio · @Transactional · Validaciones</span>
+            </div>
+            <div class="arch-arrow" aria-hidden="true">↓</div>
+            <div class="arch-layer arch-layer--repo">
+              <span class="arch-layer__label">Repositories (JPA)</span>
+              <span class="arch-layer__sub">Acceso a datos · Queries JPQL custom</span>
+            </div>
+            <div class="arch-arrow" aria-hidden="true">↓</div>
+            <div class="arch-layer arch-layer--db">
+              <span class="arch-layer__label">MySQL 8</span>
+            </div>
+          </div>
+
+          <div class="arch-entities">
+            <h3 class="arch-entities__title">Modelo de datos</h3>
+            <div class="entity-card">
+              <span class="entity-card__name">Cliente</span>
+              <span class="entity-card__rel">1:1 → Usuario</span>
+              <span class="entity-card__rel">1:N → Cuentas</span>
+            </div>
+            <div class="entity-card">
+              <span class="entity-card__name">Usuario</span>
+              <span class="entity-card__rel">1:N → Tokens</span>
+              <span class="entity-card__rel">Roles: CLIENTE | ADMIN</span>
+            </div>
+            <div class="entity-card">
+              <span class="entity-card__name">Cuenta</span>
+              <span class="entity-card__rel">Tipos: AHORRO | CORRIENTE</span>
+              <span class="entity-card__rel">@Version (optimistic lock)</span>
+            </div>
+            <div class="entity-card">
+              <span class="entity-card__name">Transaccion</span>
+              <span class="entity-card__rel">Tipos: DEPOSITO | RETIRO | TRANSFERENCIA</span>
+              <span class="entity-card__rel">Origen + Destino + Estado</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <span class="footer__logo-mark">SB</span>
+        <span class="footer__name">SpringBank</span>
+      </div>
+      <p class="footer__desc">Proyecto de práctica · Spring Boot + Spring Security · Java 17</p>
+      <div class="footer__links">
+        <a href="https://github.com/Tomadin/SpringBank" target="_blank" rel="noopener">GitHub</a>
+        <span class="footer__sep" aria-hidden="true">·</span>
+        <a href="http://localhost:8080/swagger-ui.html" target="_blank" rel="noopener">Swagger UI (local)</a>
+      </div>
+      <p class="footer__copy">Construido con Spring Boot, Spring Security, MySQL y Docker.</p>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

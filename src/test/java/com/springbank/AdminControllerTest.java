@@ -94,7 +94,7 @@ public class AdminControllerTest {
         UsuarioResponseDTO usuario1 = new UsuarioResponseDTO(1L, "juan123", RolUsuario.ADMIN, 2L);
         List<Long> cuentas1 = List.of(1001L, 1002L);
 
-        List<ClienteResponseDTO> clientes = List.of(new ClienteResponseDTO(1L, "Juan", "Perez", usuario1, cuentas1));
+        List<ClienteResponseDTO> clientes = List.of(new ClienteResponseDTO(1L, "Juan", "Perez", null, null, usuario1, cuentas1));
         when(clienteService.obtenerTodos()).thenReturn(clientes);
 
         mockMvc.perform(get("/api/v1/admin/clientes"))
@@ -109,7 +109,7 @@ public class AdminControllerTest {
         String dni = "12345678";
         UsuarioResponseDTO usuario = new UsuarioResponseDTO(1L, "juan123", RolUsuario.ADMIN, 2L);
         List<Long> cuentas = List.of(1001L, 1002L);
-        ClienteResponseDTO cliente = new ClienteResponseDTO(1L, "Juan", "Perez", usuario, cuentas);
+        ClienteResponseDTO cliente = new ClienteResponseDTO(1L, "Juan", "Perez", null, null, usuario, cuentas);
         when(clienteService.obtenerClientePorDni(dni)).thenReturn(cliente);
 
         mockMvc.perform(get("/api/v1/admin/clientes/dni/" + dni))

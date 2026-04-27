@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Operaciones — SpringBank</title>
+<link rel="stylesheet" href="/css/styles.css"/>
+<style>
+  .page-wrap    { max-width: 640px; margin: 0 auto; padding: 36px 24px 80px; }
+  .page-hero    { margin-bottom: 36px; }
+  .page-hero h1 { font-family: var(--font-d); font-size: 2rem; font-weight: 700; color: var(--green-900); margin-bottom: 4px; }
+  .page-hero p  { color: var(--muted); font-size: .9375rem; }
+
+  .op-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl); box-shadow: var(--sh-xs); overflow: hidden; }
+  .op-body  { padding: 28px; display: flex; flex-direction: column; gap: 20px; }
+
+  .saldo-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--green-50, #f0f7f0); color: var(--green-800);
+    padding: 6px 14px; border-radius: var(--r-full); font-size: .875rem; font-weight: 600;
+    margin-top: 6px;
+  }
+
+  .confirm-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+  .confirm-list li { display: flex; justify-content: space-between; font-size: .9375rem; }
+  .confirm-list li span:first-child { color: var(--muted); }
+  .confirm-list li span:last-child  { font-weight: 600; color: var(--text); }
+
+  .modal-inner { padding: 28px; }
+  .modal-title { font-family: var(--font-d); font-size: 1.3rem; font-weight: 700; color: var(--green-900); margin-bottom: 20px; }
+  .modal-foot  { display: flex; gap: 10px; padding: 0 28px 24px; }
+  .modal-foot .btn { flex: 1; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="/dashboard">
+      <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+        <rect width="30" height="30" rx="8" fill="var(--green-900)"/>
+        <path d="M15 4L5 9.5H25L15 4Z" fill="#52B788"/>
+        <rect x="7" y="12" width="3" height="8" rx=".5" fill="white" opacity=".65"/>
+        <rect x="12" y="12" width="3" height="8" rx=".5" fill="white" opacity=".65"/>
+        <rect x="17" y="12" width="3" height="8" rx=".5" fill="white" opacity=".65"/>
+        <rect x="22" y="12" width="3" height="8" rx=".5" fill="white" opacity=".65"/>
+        <rect x="5" y="22" width="20" height="2" rx=".5" fill="#52B788"/>
+      </svg>
+      SpringBank
+    </a>
+    <div class="nav-actions">
+      <a href="/dashboard" class="btn btn--ghost btn--sm">← Inicio</a>
+    </div>
+  </div>
+</nav>
+
+<main class="page-wrap">
+
+  <div class="page-hero fade-up">
+    <h1>Operaciones</h1>
+    <p>Depositá, retirá o transferí desde tus cuentas.</p>
+  </div>
+
+  <div class="fade-up" style="animation-delay:60ms">
+
+    <!-- Tabs -->
+    <div class="tabs" id="tabs" style="margin-bottom:24px">
+      <button class="tab active" data-tab="depositar">Depositar</button>
+      <button class="tab" data-tab="retirar">Retirar</button>
+      <button class="tab" data-tab="transferir">Transferir</button>
+    </div>
+
+    <!-- Panel Depositar -->
+    <div id="panel-depositar" class="op-card">
+      <div class="op-body">
+        <div class="fg">
+          <label class="label" for="dep-cuenta">Cuenta destino</label>
+          <select class="input" id="dep-cuenta"><option value="">Cargando…</option></select>
+        </div>
+        <div class="fg">
+          <label class="label" for="dep-monto">Monto</label>
+          <div class="iw">
+            <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:600;pointer-events:none">$</span>
+            <input class="input" type="number" id="dep-monto" placeholder="0.00" min="100" step="0.01" style="padding-left:28px"/>
+          </div>
+          <span class="hint" style="margin-top:4px;display:block">Mínimo $100.00</span>
+        </div>
+        <div class="err-box" id="dep-err">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span id="dep-err-msg"></span>
+        </div>
+        <button class="btn btn--primary btn--full" id="dep-btn">Confirmar depósito</button>
+      </div>
+    </div>
+
+    <!-- Panel Retirar -->
+    <div id="panel-retirar" class="op-card" style="display:none">
+      <div class="op-body">
+        <div class="fg">
+          <label class="label" for="ret-cuenta">Cuenta origen</label>
+          <select class="input" id="ret-cuenta"><option value="">Cargando…</option></select>
+          <div class="saldo-chip" id="ret-saldo" style="display:none">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+            Saldo disponible: <strong id="ret-saldo-val"></strong>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="label" for="ret-monto">Monto</label>
+          <div class="iw">
+            <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:600;pointer-events:none">$</span>
+            <input class="input" type="number" id="ret-monto" placeholder="0.00" min="100" step="0.01" style="padding-left:28px"/>
+          </div>
+          <span class="hint" style="margin-top:4px;display:block">Mínimo $100.00</span>
+        </div>
+        <div class="err-box" id="ret-err">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span id="ret-err-msg"></span>
+        </div>
+        <button class="btn btn--primary btn--full" id="ret-btn">Confirmar retiro</button>
+      </div>
+    </div>
+
+    <!-- Panel Transferir -->
+    <div id="panel-transferir" class="op-card" style="display:none">
+      <div class="op-body">
+        <div class="fg">
+          <label class="label" for="tra-origen">Cuenta origen (tuya)</label>
+          <select class="input" id="tra-origen"><option value="">Cargando…</option></select>
+        </div>
+        <div class="fg">
+          <label class="label" for="tra-destino">Número de cuenta destino</label>
+          <input class="input" type="number" id="tra-destino" placeholder="Ej: 1234567890" inputmode="numeric"/>
+          <span class="hint" style="margin-top:4px;display:block">Podés transferir a cualquier cuenta SpringBank</span>
+        </div>
+        <div class="fg">
+          <label class="label" for="tra-monto">Monto</label>
+          <div class="iw">
+            <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:600;pointer-events:none">$</span>
+            <input class="input" type="number" id="tra-monto" placeholder="0.00" min="100" step="0.01" style="padding-left:28px"/>
+          </div>
+          <span class="hint" style="margin-top:4px;display:block">Mínimo $100.00</span>
+        </div>
+        <div class="fg">
+          <label class="label" for="tra-motivo">Motivo <span style="color:var(--muted);font-weight:400">(opcional)</span></label>
+          <input class="input" type="text" id="tra-motivo" placeholder="Ej: Pago alquiler"/>
+        </div>
+        <div class="err-box" id="tra-err">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span id="tra-err-msg"></span>
+        </div>
+        <button class="btn btn--primary btn--full" id="tra-btn">Confirmar transferencia</button>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<!-- Modal de confirmación -->
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal">
+    <div class="modal-inner">
+      <div class="modal-title" id="modal-title">Confirmar operación</div>
+      <ul class="confirm-list" id="modal-body"></ul>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn--ghost" id="modal-cancel">Cancelar</button>
+      <button class="btn btn--primary" id="modal-confirm">
+        <span class="btn-txt">Confirmar</span>
+        <span class="spin spinner-sm spinner-white"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { api, toast, fmtMoney, requireRole, getClienteId } from '/js/api.js';
+
+requireRole('CLIENTE');
+
+// ── Cuentas del cliente ───────────────────────────────────────────────────
+let cuentas = [];
+let saldos  = {};
+let pendingAction = null;
+
+async function cargarCuentas() {
+  const clienteId = getClienteId();
+  const cliente = await api(`/clientes/${clienteId}`);
+  const ids = cliente.cuentasId ?? [];
+
+  const detalle = await Promise.all(ids.map(n => api(`/cuentas/${n}/saldo`)));
+  cuentas = detalle;
+  detalle.forEach(c => { saldos[c.numeroCuenta] = c.saldo; });
+
+  const opts = detalle.map(c =>
+    `<option value="${c.numeroCuenta}">${c.tipoCuenta} — ${c.numeroCuenta}</option>`
+  ).join('');
+
+  ['dep-cuenta','ret-cuenta','tra-origen'].forEach(id => {
+    const el = document.getElementById(id);
+    el.innerHTML = opts || '<option value="">Sin cuentas disponibles</option>';
+  });
+
+  // Mostrar saldo inicial en retiro
+  updateRetSaldo();
+}
+
+function updateRetSaldo() {
+  const sel = document.getElementById('ret-cuenta');
+  const n = Number(sel.value);
+  const chip = document.getElementById('ret-saldo');
+  if (!n) { chip.style.display = 'none'; return; }
+  chip.style.display = 'inline-flex';
+  document.getElementById('ret-saldo-val').textContent = fmtMoney(saldos[n] ?? 0);
+}
+
+document.getElementById('ret-cuenta').addEventListener('change', updateRetSaldo);
+
+// ── Tabs ─────────────────────────────────────────────────────────────────
+const panels = { depositar: 'panel-depositar', retirar: 'panel-retirar', transferir: 'panel-transferir' };
+
+document.getElementById('tabs').addEventListener('click', e => {
+  const tab = e.target.closest('[data-tab]');
+  if (!tab) return;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  Object.values(panels).forEach(p => { document.getElementById(p).style.display = 'none'; });
+  document.getElementById(panels[tab.dataset.tab]).style.display = 'block';
+  clearErrors();
+});
+
+// Leer parámetro ?cuenta de URL
+const urlCuenta = new URLSearchParams(location.search).get('cuenta');
+
+// ── Errores ───────────────────────────────────────────────────────────────
+function showErr(prefix, msg) {
+  const box = document.getElementById(`${prefix}-err`);
+  document.getElementById(`${prefix}-err-msg`).textContent = msg;
+  box.classList.add('show');
+}
+function clearErrors() {
+  ['dep-err','ret-err','tra-err'].forEach(id => document.getElementById(id).classList.remove('show'));
+}
+
+// ── Validaciones ──────────────────────────────────────────────────────────
+function validateMonto(val, prefix) {
+  const n = parseFloat(val);
+  if (isNaN(n) || n < 100) { showErr(prefix, 'El monto mínimo es $100.00'); return null; }
+  return n;
+}
+
+// ── Modal ────────────────────────────────────────────────────────────────
+const overlay    = document.getElementById('overlay');
+const confirmBtn = document.getElementById('modal-confirm');
+
+function openModal(title, items, action) {
+  document.getElementById('modal-title').textContent = title;
+  const list = document.getElementById('modal-body');
+  list.innerHTML = items.map(([k, v]) => `<li><span>${k}</span><span>${v}</span></li>`).join('');
+  pendingAction = action;
+  overlay.classList.add('open');
+}
+
+function closeModal() {
+  overlay.classList.remove('open');
+  pendingAction = null;
+}
+
+overlay.addEventListener('click', closeModal);
+document.getElementById('modal-cancel').addEventListener('click', closeModal);
+
+confirmBtn.addEventListener('click', async () => {
+  if (!pendingAction) return;
+  confirmBtn.classList.add('loading'); confirmBtn.disabled = true;
+  try {
+    await pendingAction();
+    closeModal();
+  } catch (err) {
+    toast(err.message ?? 'Error al procesar la operación.', 'error');
+    closeModal();
+  } finally {
+    confirmBtn.classList.remove('loading'); confirmBtn.disabled = false;
+  }
+});
+
+// ── Depositar ─────────────────────────────────────────────────────────────
+document.getElementById('dep-btn').addEventListener('click', () => {
+  clearErrors();
+  const cuenta = Number(document.getElementById('dep-cuenta').value);
+  const monto  = validateMonto(document.getElementById('dep-monto').value, 'dep');
+  if (!cuenta) { showErr('dep', 'Seleccioná una cuenta.'); return; }
+  if (!monto) return;
+
+  const tipo = cuentas.find(c => c.numeroCuenta === cuenta)?.tipoCuenta ?? '';
+
+  openModal('Confirmar depósito', [
+    ['Cuenta', `${tipo} — ${cuenta}`],
+    ['Monto',  fmtMoney(monto)],
+    ['Tipo',   'Depósito'],
+  ], async () => {
+    await api('/transacciones/depositar', {
+      method: 'POST',
+      body: JSON.stringify({ monto, tipo: 'DEPOSITO', numeroCuentaOrigen: cuenta, numeroCuentaDestino: cuenta }),
+    });
+    toast('¡Depósito realizado con éxito!');
+    document.getElementById('dep-monto').value = '';
+    saldos[cuenta] = (saldos[cuenta] ?? 0) + monto;
+  });
+});
+
+// ── Retirar ───────────────────────────────────────────────────────────────
+document.getElementById('ret-btn').addEventListener('click', () => {
+  clearErrors();
+  const cuenta = Number(document.getElementById('ret-cuenta').value);
+  const monto  = validateMonto(document.getElementById('ret-monto').value, 'ret');
+  if (!cuenta) { showErr('ret', 'Seleccioná una cuenta.'); return; }
+  if (!monto) return;
+  if (monto > (saldos[cuenta] ?? 0)) { showErr('ret', 'Saldo insuficiente para este retiro.'); return; }
+
+  const tipo = cuentas.find(c => c.numeroCuenta === cuenta)?.tipoCuenta ?? '';
+
+  openModal('Confirmar retiro', [
+    ['Cuenta',           `${tipo} — ${cuenta}`],
+    ['Monto',            fmtMoney(monto)],
+    ['Saldo disponible', fmtMoney(saldos[cuenta] ?? 0)],
+    ['Tipo',             'Retiro'],
+  ], async () => {
+    await api('/transacciones/retirar', {
+      method: 'POST',
+      body: JSON.stringify({ monto, tipo: 'RETIRO', numeroCuentaOrigen: cuenta, numeroCuentaDestino: cuenta }),
+    });
+    toast('¡Retiro realizado con éxito!');
+    document.getElementById('ret-monto').value = '';
+    saldos[cuenta] = (saldos[cuenta] ?? 0) - monto;
+    updateRetSaldo();
+  });
+});
+
+// ── Transferir ────────────────────────────────────────────────────────────
+document.getElementById('tra-btn').addEventListener('click', () => {
+  clearErrors();
+  const origen  = Number(document.getElementById('tra-origen').value);
+  const destino = Number(document.getElementById('tra-destino').value);
+  const monto   = validateMonto(document.getElementById('tra-monto').value, 'tra');
+  const motivo  = document.getElementById('tra-motivo').value.trim() || undefined;
+
+  if (!origen)  { showErr('tra', 'Seleccioná la cuenta origen.'); return; }
+  if (!destino) { showErr('tra', 'Ingresá el número de cuenta destino.'); return; }
+  if (origen === destino) { showErr('tra', 'El origen y destino no pueden ser la misma cuenta.'); return; }
+  if (!monto) return;
+
+  const tipo = cuentas.find(c => c.numeroCuenta === origen)?.tipoCuenta ?? '';
+
+  openModal('Confirmar transferencia', [
+    ['Desde',  `${tipo} — ${origen}`],
+    ['Hacia',  String(destino)],
+    ['Monto',  fmtMoney(monto)],
+    ...(motivo ? [['Motivo', motivo]] : []),
+  ], async () => {
+    await api('/transacciones/transferir', {
+      method: 'POST',
+      body: JSON.stringify({ monto, tipo: 'TRANSFERENCIA', numeroCuentaOrigen: origen, numeroCuentaDestino: destino, motivo }),
+    });
+    toast('¡Transferencia realizada con éxito!');
+    document.getElementById('tra-destino').value = '';
+    document.getElementById('tra-monto').value   = '';
+    document.getElementById('tra-motivo').value  = '';
+  });
+});
+
+// ── Init ──────────────────────────────────────────────────────────────────
+cargarCuentas().then(() => {
+  if (urlCuenta) {
+    ['dep-cuenta','ret-cuenta','tra-origen'].forEach(id => {
+      const el = document.getElementById(id);
+      const opt = [...el.options].find(o => o.value === urlCuenta);
+      if (opt) el.value = urlCuenta;
+    });
+    updateRetSaldo();
+  }
+}).catch(err => toast(err.message ?? 'Error al cargar cuentas.', 'error'));
+</script>
+</body>
+</html>

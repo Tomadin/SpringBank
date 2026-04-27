@@ -2,7 +2,7 @@
 package com.springbank.exception;
 
 
-public class EmailInvalido extends Exception{
+public class EmailInvalido extends RuntimeException {
 
 
     public EmailInvalido() {

@@ -83,7 +83,7 @@ public class Usuario implements Serializable {
 
     @Override
     public String toString() {
-        return "Usuario{" + "id=" + id + ", username=" + username + ", password=" + password + ", rol=" + rol + ", cliente=" + cliente + '}';
+        return "Usuario{id=" + id + ", username=" + username + ", rol=" + rol + '}';
     }
 
 }

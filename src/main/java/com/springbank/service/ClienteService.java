@@ -34,7 +34,7 @@ public class ClienteService {
         this.cuentaService = cuentaService;
     }
 
-    private void validarDNI(String dni) throws DniInvalido {
+    private void validarDNI(String dni) {
 
         int dniNum;
 
@@ -58,17 +58,17 @@ public class ClienteService {
 
     }
 
-    private void validarEmail(String email) throws EmailInvalido {
+    private void validarEmail(String email) {
         if (email == null) {
             throw new EmailInvalido("El email esta vacio.");
         }
 
-        String emailLimpio = email.trim();
-        Optional<Cliente> resultado = clienteRepository.findByEmail(emailLimpio);
-
         if (!email.equals(email.trim())) {
             throw new EmailInvalido("El email no debe contener espacios al inicio o al final.");
         }
+
+        String emailLimpio = email.trim();
+        Optional<Cliente> resultado = clienteRepository.findByEmail(emailLimpio);
 
         if (emailLimpio.length() < 5) {
             throw new EmailInvalido("El email es demasiado corto.");
@@ -84,7 +84,7 @@ public class ClienteService {
     }
 
     @Transactional
-    public void crearCliente(ClienteRequestDTO clienteRequestDTO) throws DniInvalido, EmailInvalido {
+    public void crearCliente(ClienteRequestDTO clienteRequestDTO) {
         validarDNI(clienteRequestDTO.getDni());
         validarEmail(clienteRequestDTO.getEmail().toLowerCase());
         Cliente cliente = new Cliente(
@@ -107,7 +107,7 @@ public class ClienteService {
     }
 
     @Transactional
-    public void agregarCuentaPorId(Long id, CuentaRequestDTO cuentaDTO) throws ClienteNoEncontrado, Exception {
+    public void agregarCuentaPorId(Long id, CuentaRequestDTO cuentaDTO) {
         Cliente cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new ClienteNoEncontrado("Cliente no encontrado con id: " + id));
 
@@ -148,15 +148,17 @@ public class ClienteService {
             );
         }
 
-        List<Long> cuentasIdList = cliente.getCuentas() //cliente.getCuentas trae objetos Cuenta y debemos sacar los id, por eso utilizamos un stream, map y collect para tener una lista con los ids
+        List<Long> cuentasIdList = cliente.getCuentas()
                 .stream()
-                .map(Cuenta::getId)
+                .map(Cuenta::getNumeroCuenta) // numeroCuenta, no el id interno, para poder usarlo en los endpoints de cuentas
                 .collect(Collectors.toList());
 
         return new ClienteResponseDTO(
                 cliente.getId(),
                 cliente.getNombre(),
                 cliente.getApellido(),
+                cliente.getEmail(),
+                cliente.getDni(),
                 usuarioDTO,
                 cuentasIdList);
 

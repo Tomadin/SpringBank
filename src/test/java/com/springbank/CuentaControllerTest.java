@@ -149,7 +149,7 @@ public class CuentaControllerTest {
     void traerSaldo_Admin_ConCuentaExistente_200() throws Exception {
         Long numeroCuenta = 12345L;
 
-        ClienteResponseDTO cliente = new ClienteResponseDTO(10L, "Juan", "Perez", null, List.of());
+        ClienteResponseDTO cliente = new ClienteResponseDTO(10L, "Juan", "Perez", null, null, null, List.of());
         CuentaResponseDTO cuentaResponse = new CuentaResponseDTO(1L, numeroCuenta, TipoCuenta.CORRIENTE, BigDecimal.ZERO, 10L, LocalDateTime.MAX, 1L);
         SaldoResponseDTO saldoResponse = new SaldoResponseDTO(numeroCuenta, BigDecimal.valueOf(5000L));
 
@@ -167,7 +167,7 @@ public class CuentaControllerTest {
     void traerSaldo_ClienteNoPropietario_403() throws Exception {
         Long numeroCuenta = 12345L;
 
-        ClienteResponseDTO cliente = new ClienteResponseDTO(10L, "Juan", "Perez", null, List.of());
+        ClienteResponseDTO cliente = new ClienteResponseDTO(10L, "Juan", "Perez", null, null, null, List.of());
         CuentaResponseDTO cuentaResponse = new CuentaResponseDTO(1L, numeroCuenta, TipoCuenta.CORRIENTE, BigDecimal.ZERO, 10L, LocalDateTime.MAX, 1L);
         
 
@@ -196,7 +196,7 @@ public class CuentaControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void traerTransacciones_Admin_ConCuentaExistente_200() throws Exception {
         Long numeroCuenta = 12345L;
-        ClienteResponseDTO cliente = new ClienteResponseDTO(10L, "Juan", "Perez", null, List.of());
+        ClienteResponseDTO cliente = new ClienteResponseDTO(10L, "Juan", "Perez", null, null, null, List.of());
         CuentaResponseDTO cuentaResponse = new CuentaResponseDTO(1L, numeroCuenta, TipoCuenta.CORRIENTE, BigDecimal.ZERO, 10L, LocalDateTime.MAX, 1L);
         
 
@@ -224,7 +224,7 @@ public class CuentaControllerTest {
     @WithMockUser(username = "cliente1", roles = {"CLIENTE"})
     void traerTransacciones_ClienteNoPropietario_403() throws Exception {
         Long numeroCuenta = 12345L;
-        ClienteResponseDTO cliente = new ClienteResponseDTO(10L, "Juan", "Perez", null, List.of());
+        ClienteResponseDTO cliente = new ClienteResponseDTO(10L, "Juan", "Perez", null, null, null, List.of());
         CuentaResponseDTO cuentaResponse = new CuentaResponseDTO(1L, numeroCuenta, TipoCuenta.CORRIENTE, BigDecimal.ZERO, 10L, LocalDateTime.MAX, 1L);
         
         when(cuentaService.buscarPorNumeroCuenta(numeroCuenta)).thenReturn(cuentaResponse);

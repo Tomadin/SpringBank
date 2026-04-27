@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TransaccionRepository extends JpaRepository<Transaccion, Long> {
 
-    @Query("SELECT t FROM Transaccion t WHERE t.cuentaOrigen.numeroCuenta = :numeroCuenta ORDER BY t.fecha DESC")
+    @Query("SELECT t FROM Transaccion t WHERE t.cuentaOrigen.numeroCuenta = :numeroCuenta OR t.cuentaDestino.numeroCuenta = :numeroCuenta ORDER BY t.fecha DESC")
     List<Transaccion> obtenerHistorialPorNumeroCuenta(@Param("numeroCuenta") Long numeroCuenta);
 }

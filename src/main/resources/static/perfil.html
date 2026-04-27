@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mi perfil — SpringBank</title>
+<link rel="stylesheet" href="/css/styles.css"/>
+<style>
+  .page-wrap { max-width: 700px; margin: 0 auto; padding: 44px 24px 80px; }
+
+  /* Avatar hero */
+  .profile-hero {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    margin-bottom: 40px;
+  }
+  .profile-avatar {
+    width: 88px; height: 88px; border-radius: 50%;
+    background: var(--green-900); color: #fff;
+    font-family: var(--font-d); font-size: 2.1rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px rgba(27,67,50,.25); margin-bottom: 14px;
+  }
+  .profile-name { font-family: var(--font-d); font-size: 1.75rem; font-weight: 700; color: var(--green-900); margin-bottom: 4px; }
+  .profile-sub  { color: var(--muted); font-size: .9375rem; }
+
+  /* Secciones */
+  .prof-section {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl);
+    box-shadow: var(--sh-xs); overflow: hidden; margin-bottom: 16px;
+  }
+  .prof-sec-head {
+    padding: 20px 24px 0; display: flex; align-items: center; gap: 10px; margin-bottom: 4px;
+  }
+  .prof-sec-icon {
+    width: 36px; height: 36px; border-radius: var(--r-md);
+    background: var(--green-50, #f0f7f0); display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .prof-sec-title { font-weight: 700; font-size: .9375rem; color: var(--green-900); }
+
+  .prof-fields { padding: 18px 24px 22px; display: flex; flex-direction: column; gap: 0; }
+  .prof-field  {
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
+    gap: 6px; padding: 12px 0; border-bottom: 1px solid var(--border);
+  }
+  .prof-field:last-child { border-bottom: none; }
+  .prof-field-key   { font-size: .8125rem; color: var(--muted); font-weight: 500; letter-spacing: .02em; }
+  .prof-field-value { font-weight: 600; color: var(--text); font-size: .9375rem; }
+
+  .cuentas-list { padding: 16px 24px 22px; display: flex; flex-direction: column; gap: 10px; }
+  .cuenta-item  {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--r-lg);
+    background: var(--bg);
+  }
+  .cuenta-item-l { display: flex; align-items: center; gap: 10px; }
+  .cuenta-num    { font-weight: 600; font-size: .9375rem; color: var(--text); }
+
+  .skel-field  { height: 42px; border-radius: var(--r-md); background: var(--skel-bg, #e6ebe6); margin-bottom: 8px; animation: skelPulse 1.4s ease-in-out infinite; }
+  .skel-avatar { width: 88px; height: 88px; border-radius: 50%; background: var(--skel-bg, #e6ebe6); animation: skelPulse 1.4s ease-in-out infinite; margin-bottom: 14px; }
+  @keyframes skelPulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="/dashboard">
+      <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+        <rect width="30" height="30" rx="8" fill="var(--green-900)"/>
+        <path d="M15 4L5 9.5H25L15 4Z" fill="#52B788"/>
+        <rect x="7" y="12" width="3" height="8" rx=".5" fill="white" opacity=".65"/>
+        <rect x="12" y="12" width="3" height="8" rx=".5" fill="white" opacity=".65"/>
+        <rect x="17" y="12" width="3" height="8" rx=".5" fill="white" opacity=".65"/>
+        <rect x="22" y="12" width="3" height="8" rx=".5" fill="white" opacity=".65"/>
+        <rect x="5" y="22" width="20" height="2" rx=".5" fill="#52B788"/>
+      </svg>
+      SpringBank
+    </a>
+    <div class="nav-actions">
+      <a href="/dashboard" class="btn btn--ghost btn--sm">← Inicio</a>
+      <button class="btn btn--ghost btn--sm" id="logoutBtn">Salir</button>
+    </div>
+  </div>
+</nav>
+
+<main class="page-wrap">
+
+  <!-- Avatar hero -->
+  <div class="profile-hero fade-up" id="heroSection">
+    <div class="skel-avatar" id="avatarSkel"></div>
+    <div class="profile-avatar" id="profileAvatar" style="display:none"></div>
+    <div id="heroTexts">
+      <div class="skel-field" style="width:200px;margin:0 auto 8px"></div>
+      <div class="skel-field" style="width:140px;margin:0 auto;height:20px"></div>
+    </div>
+    <div id="heroReal" style="display:none">
+      <div class="profile-name" id="profileName"></div>
+      <div class="profile-sub" id="profileSub"></div>
+    </div>
+  </div>
+
+  <!-- Datos personales -->
+  <div class="prof-section fade-up" style="animation-delay:60ms">
+    <div class="prof-sec-head">
+      <div class="prof-sec-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green-800)" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <div class="prof-sec-title">Datos personales</div>
+    </div>
+    <div class="prof-fields" id="datosFields">
+      <div class="skel-field"></div>
+      <div class="skel-field" style="animation-delay:.1s"></div>
+      <div class="skel-field" style="animation-delay:.2s"></div>
+      <div class="skel-field" style="animation-delay:.3s"></div>
+    </div>
+  </div>
+
+  <!-- Cuenta de usuario -->
+  <div class="prof-section fade-up" style="animation-delay:100ms">
+    <div class="prof-sec-head">
+      <div class="prof-sec-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green-800)" stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+        </svg>
+      </div>
+      <div class="prof-sec-title">Acceso a la plataforma</div>
+    </div>
+    <div class="prof-fields" id="usuarioFields">
+      <div class="skel-field"></div>
+      <div class="skel-field" style="animation-delay:.1s"></div>
+    </div>
+  </div>
+
+  <!-- Cuentas bancarias -->
+  <div class="prof-section fade-up" style="animation-delay:140ms">
+    <div class="prof-sec-head">
+      <div class="prof-sec-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green-800)" stroke-width="2">
+          <rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>
+        </svg>
+      </div>
+      <div class="prof-sec-title">Cuentas bancarias</div>
+    </div>
+    <div class="cuentas-list" id="cuentasList">
+      <div class="skel-field"></div>
+      <div class="skel-field" style="animation-delay:.1s"></div>
+    </div>
+  </div>
+
+</main>
+
+<script type="module">
+import { api, toast, requireRole, getClienteId, getUsername } from '/js/api.js';
+import { logout } from '/js/auth.js';
+
+requireRole('CLIENTE');
+
+document.getElementById('logoutBtn').addEventListener('click', logout);
+
+function maskDni(dni) {
+  if (!dni || dni.length < 4) return dni;
+  return dni.slice(0, 2) + '•'.repeat(dni.length - 4) + dni.slice(-2);
+}
+
+function field(key, valueHtml) {
+  return `
+    <div class="prof-field">
+      <span class="prof-field-key">${key}</span>
+      <span class="prof-field-value">${valueHtml}</span>
+    </div>
+  `;
+}
+
+async function load() {
+  const clienteId = getClienteId();
+  const username  = getUsername();
+
+  const [cliente, usuario] = await Promise.all([
+    api(`/clientes/${clienteId}`),
+    api(`/usuarios/${username}`),
+  ]);
+
+  const nombreCompleto = `${cliente.nombre ?? ''} ${cliente.apellido ?? ''}`.trim();
+  const iniciales = [cliente.nombre, cliente.apellido]
+    .filter(Boolean).map(s => s[0]).join('').toUpperCase();
+
+  // Hero
+  document.getElementById('avatarSkel').style.display = 'none';
+  const av = document.getElementById('profileAvatar');
+  av.textContent = iniciales || '?';
+  av.style.display = 'flex';
+  document.getElementById('heroTexts').style.display = 'none';
+  document.getElementById('heroReal').style.display  = 'block';
+  document.getElementById('profileName').textContent = nombreCompleto;
+  document.getElementById('profileSub').innerHTML    = `<span class="badge badge-${(usuario.rol ?? '').toLowerCase()}">${usuario.rol}</span>`;
+
+  // Datos personales
+  const datosFields = document.getElementById('datosFields');
+  datosFields.innerHTML =
+    field('Nombre',   cliente.nombre   ?? '—') +
+    field('Apellido', cliente.apellido ?? '—') +
+    field('Email',
+      `<span style="display:inline-flex;align-items:center;gap:6px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        ${cliente.email ?? '—'}
+      </span>`) +
+    field('DNI',
+      `<span style="letter-spacing:.08em;font-family:monospace">${maskDni(cliente.dni ?? '')}</span>`);
+
+  // Usuario
+  const usuarioFields = document.getElementById('usuarioFields');
+  usuarioFields.innerHTML =
+    field('Usuario',
+      `<span style="display:inline-flex;align-items:center;gap:6px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        @${usuario.username ?? '—'}
+      </span>`) +
+    field('Rol', `<span class="badge badge-${(usuario.rol ?? '').toLowerCase()}">${usuario.rol ?? '—'}</span>`);
+
+  // Cuentas
+  const cuentasList = document.getElementById('cuentasList');
+  const cuentasIds  = cliente.cuentasId ?? [];
+
+  if (cuentasIds.length === 0) {
+    cuentasList.innerHTML = `
+      <div style="text-align:center;padding:16px 0;color:var(--muted);font-size:.9rem">
+        No tenés cuentas abiertas aún.
+        <a href="/nueva-cuenta" style="color:var(--green-800);font-weight:600;margin-left:4px">Abrir una</a>
+      </div>`;
+    return;
+  }
+
+  const detalles = await Promise.all(cuentasIds.map(n => api(`/cuentas/${n}/saldo`)));
+  cuentasList.innerHTML = detalles.map(c => {
+    const corriente = c.tipoCuenta === 'CORRIENTE';
+    return `
+      <div class="cuenta-item">
+        <div class="cuenta-item-l">
+          <span class="badge ${corriente ? 'badge-corriente' : 'badge-ahorro'}">${c.tipoCuenta}</span>
+          <span class="cuenta-num">${c.numeroCuenta}</span>
+        </div>
+        <a href="/movimientos?cuenta=${c.numeroCuenta}" class="btn btn--ghost btn--sm">Ver movimientos</a>
+      </div>
+    `;
+  }).join('');
+}
+
+load().catch(err => {
+  toast(err.message ?? 'Error al cargar el perfil.', 'error');
+});
+</script>
+</body>
+</html>

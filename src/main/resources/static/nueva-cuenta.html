@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nueva cuenta — SpringBank</title>
+<link rel="stylesheet" href="/css/styles.css"/>
+<style>
+  .page-wrap  { max-width: 680px; margin: 0 auto; padding: 44px 24px 80px; }
+  .page-hero  { text-align: center; margin-bottom: 40px; }
+  .page-hero h1 { font-family: var(--font-d); font-size: 2.1rem; font-weight: 700; color: var(--green-900); margin-bottom: 6px; }
+  .page-hero p  { color: var(--muted); font-size: .9375rem; }
+
+  .tipo-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+  @media (max-width: 500px) { .tipo-grid { grid-template-columns: 1fr; } }
+
+  .tipo-card  {
+    position: relative; padding: 28px 24px;
+    background: var(--surface); border: 2px solid var(--border);
+    border-radius: var(--r-xl); cursor: pointer; transition: border-color .2s, box-shadow .2s;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .tipo-card:hover:not(.tipo-card--disabled) { border-color: var(--green-500); box-shadow: var(--sh-sm); }
+  .tipo-card.selected { border-color: var(--green-800); box-shadow: 0 0 0 3px rgba(46,125,50,.12); }
+  .tipo-card--disabled { cursor: not-allowed; opacity: .55; background: var(--bg); }
+
+  .tipo-icon {
+    width: 52px; height: 52px; border-radius: var(--r-lg);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .tipo-icon--ahorro    { background: var(--green-50, #f0f7f0); }
+  .tipo-icon--corriente { background: #EFF6FF; }
+
+  .tipo-name  { font-weight: 700; font-size: 1.05rem; color: var(--text); }
+  .tipo-desc  { font-size: .8375rem; color: var(--muted); line-height: 1.55; }
+
+  .check-badge {
+    position: absolute; top: 14px; right: 14px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--green-800); display: none; align-items: center; justify-content: center;
+  }
+  .selected .check-badge { display: flex; }
+  .ya-la-tenes {
+    position: absolute; top: 14px; right: 14px;
+    font-size: .72rem; font-weight: 700; background: var(--border); color: var(--muted);
+    padding: 3px 10px; border-radius: var(--r-full); letter-spacing: .04em; text-transform: uppercase;
+  }
+
+  .form-foot  { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .all-ok-box {
+    width: 100%; padding: 20px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r-xl); text-align: center;
+  }
+  .all-ok-box p { color: var(--muted); margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<header style="background:#fff;border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100">
+  <a style="display:flex;align-items:center;gap:10px;font-family:var(--font-d);font-size:1.1rem;font-weight:700;color:var(--green-900);text-decoration:none" href="/dashboard">
+    <svg width="28" height="28" viewBox="0 0 30 30" fill="none">
+      <rect width="30" height="30" rx="8" fill="var(--green-900)"/>
+      <path d="M15 4L5 9.5H25L15 4Z" fill="#52B788"/>
+      <rect x="7" y="12" width="3" height="8" rx=".5" fill="white" opacity=".65"/>
+      <rect x="12" y="12" width="3" height="8" rx=".5" fill="white" opacity=".65"/>
+      <rect x="17" y="12" width="3" height="8" rx=".5" fill="white" opacity=".65"/>
+      <rect x="22" y="12" width="3" height="8" rx=".5" fill="white" opacity=".65"/>
+      <rect x="5" y="22" width="20" height="2" rx=".5" fill="#52B788"/>
+    </svg>
+    SpringBank
+  </a>
+  <a href="/dashboard" class="btn btn--ghost btn--sm">← Volver</a>
+</header>
+
+<main class="page-wrap">
+
+  <div class="page-hero fade-up">
+    <h1>Abrir nueva cuenta</h1>
+    <p>Elegí el tipo de cuenta que querés abrir.</p>
+  </div>
+
+  <!-- Estado: ambas cuentas ya abiertas -->
+  <div class="all-ok-box fade-up" id="allOkBox" style="display:none">
+    <div style="font-size:2rem;margin-bottom:8px">✓</div>
+    <p>Ya tenés abiertos ambos tipos de cuenta (Ahorro y Corriente).</p>
+    <a href="/dashboard" class="btn btn--primary">Ir al inicio</a>
+  </div>
+
+  <!-- Selector de tipo -->
+  <div id="selectorSection" style="display:none">
+    <div class="tipo-grid fade-up" style="animation-delay:60ms" id="tipoGrid">
+
+      <!-- AHORRO -->
+      <div class="tipo-card" id="card-AHORRO" data-tipo="AHORRO">
+        <div class="check-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <div class="tipo-icon tipo-icon--ahorro">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--green-800)" stroke-width="1.8">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+        </div>
+        <div class="tipo-name">Cuenta de Ahorro</div>
+        <div class="tipo-desc">Ideal para guardar dinero a largo plazo. Sin límite de saldo, sin costo de mantenimiento.</div>
+      </div>
+
+      <!-- CORRIENTE -->
+      <div class="tipo-card" id="card-CORRIENTE" data-tipo="CORRIENTE">
+        <div class="check-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <div class="tipo-icon tipo-icon--corriente">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.8">
+            <rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><circle cx="7" cy="15" r="1.5" fill="#3B82F6"/>
+          </svg>
+        </div>
+        <div class="tipo-name">Cuenta Corriente</div>
+        <div class="tipo-desc">Para operaciones diarias. Perfecta para transferencias frecuentes y movimientos cotidianos.</div>
+      </div>
+
+    </div>
+
+    <div class="form-foot fade-up" style="animation-delay:120ms">
+      <div class="err-box" id="errBox">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="errMsg"></span>
+      </div>
+      <button class="btn btn--primary btn--full btn--lg" id="submitBtn" disabled>
+        <span class="btn-txt" id="btnTxt">Seleccioná un tipo de cuenta</span>
+        <span class="spin spinner-sm spinner-white"></span>
+      </button>
+    </div>
+  </div>
+
+</main>
+
+<script type="module">
+import { api, toast, requireRole, getClienteId } from '/js/api.js';
+
+requireRole('CLIENTE');
+
+const clienteId = getClienteId();
+let tiposExistentes = [];
+let tipoSeleccionado = null;
+
+async function load() {
+  const cliente = await api(`/clientes/${clienteId}`);
+  const cuentasIds = cliente.cuentasId ?? [];
+
+  if (cuentasIds.length === 0) {
+    tiposExistentes = [];
+  } else {
+    const detalles = await Promise.all(cuentasIds.map(n => api(`/cuentas/${n}/saldo`)));
+    tiposExistentes = detalles.map(c => c.tipoCuenta);
+  }
+
+  if (tiposExistentes.includes('AHORRO') && tiposExistentes.includes('CORRIENTE')) {
+    document.getElementById('allOkBox').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('selectorSection').style.display = 'block';
+
+  ['AHORRO', 'CORRIENTE'].forEach(tipo => {
+    const card = document.getElementById(`card-${tipo}`);
+    if (tiposExistentes.includes(tipo)) {
+      card.classList.add('tipo-card--disabled');
+      card.insertAdjacentHTML('beforeend', `<div class="ya-la-tenes">Ya la tenés</div>`);
+    } else {
+      card.addEventListener('click', () => selectTipo(tipo));
+    }
+  });
+}
+
+function selectTipo(tipo) {
+  tipoSeleccionado = tipo;
+  document.querySelectorAll('.tipo-card:not(.tipo-card--disabled)').forEach(c => c.classList.remove('selected'));
+  document.getElementById(`card-${tipo}`).classList.add('selected');
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = false;
+  document.getElementById('btnTxt').textContent = `Abrir cuenta ${tipo === 'AHORRO' ? 'de Ahorro' : 'Corriente'}`;
+}
+
+document.getElementById('submitBtn').addEventListener('click', async () => {
+  if (!tipoSeleccionado) return;
+  const btn = document.getElementById('submitBtn');
+  const errBox = document.getElementById('errBox');
+  errBox.classList.remove('show');
+
+  btn.classList.add('loading'); btn.disabled = true;
+  try {
+    await api('/cuentas', {
+      method: 'POST',
+      body: JSON.stringify({ tipoCuenta: tipoSeleccionado, clienteId: Number(clienteId) }),
+    });
+    toast(`¡Cuenta ${tipoSeleccionado === 'AHORRO' ? 'de Ahorro' : 'Corriente'} abierta con éxito!`);
+    setTimeout(() => { location.href = '/dashboard'; }, 1500);
+  } catch (err) {
+    document.getElementById('errMsg').textContent = err.message ?? 'Error al abrir la cuenta.';
+    errBox.classList.add('show');
+    btn.classList.remove('loading'); btn.disabled = false;
+  }
+});
+
+load().catch(err => toast(err.message ?? 'Error al cargar datos.', 'error'));
+</script>
+</body>
+</html>

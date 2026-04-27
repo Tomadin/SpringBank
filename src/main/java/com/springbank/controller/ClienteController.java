@@ -3,9 +3,6 @@ package com.springbank.controller;
 import com.springbank.dto.Request.ClienteRequestDTO;
 import com.springbank.dto.Response.ClienteResponseDTO;
 import com.springbank.exception.ClienteNoEncontrado;
-import com.springbank.exception.DniInvalido;
-import com.springbank.exception.EmailInvalido;
-
 import com.springbank.service.ClienteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -42,15 +39,11 @@ public class ClienteController {
         @ApiResponse(responseCode = "400", description = "Datos inválidos.")
     })
     @PostMapping
-    public ResponseEntity<String> crearCliente(@Valid @RequestBody ClienteRequestDTO clienteRequestDTO) throws Exception {
-        try {
-            clienteService.crearCliente(clienteRequestDTO);
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .body("Cliente creado correctamente.");
-        } catch (DniInvalido | EmailInvalido e) {
-            throw e;
-        }
+    public ResponseEntity<String> crearCliente(@Valid @RequestBody ClienteRequestDTO clienteRequestDTO) {
+        clienteService.crearCliente(clienteRequestDTO);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body("Cliente creado correctamente.");
     }
 
     @Operation(summary = "Traer Cliente", description = "Traemos un cliente en la BBDD, a traves de su id. Un cliente solo puede leer sus datos, un admin puede ver cualquier cliente.")

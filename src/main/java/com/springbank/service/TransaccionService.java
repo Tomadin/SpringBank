@@ -16,12 +16,16 @@ import com.springbank.repository.TransaccionRepository;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TransaccionService {
+
+    private static final Logger log = LoggerFactory.getLogger(TransaccionService.class);
 
     @Autowired
     private TransaccionRepository transaccionRepository;
@@ -32,6 +36,7 @@ public class TransaccionService {
 
     @Transactional
     public void realizarDeposito(BigDecimal monto, Long cuentaId) {
+        log.info("Iniciando depósito de {} en cuenta {}", monto, cuentaId);
         validarMonto(monto);
         Cuenta cuenta = obtenerCuentaValida(cuentaId); //Verificamos y devolvemos la cuenta.
 
@@ -49,8 +54,8 @@ public class TransaccionService {
     }
 
     private void validarMonto(BigDecimal monto) {
-        if (monto == null || monto.compareTo(new BigDecimal("99.99")) <= 0) {
-            throw new MontoInvalidoException("El monto debe ser mayor a cien. Valor recibido: " + monto);
+        if (monto == null || monto.compareTo(new BigDecimal("100.00")) < 0) {
+            throw new MontoInvalidoException("El monto debe ser mayor o igual a 100. Valor recibido: " + monto);
         }
     }
 
@@ -77,6 +82,7 @@ public class TransaccionService {
 
     @Transactional
     public void realizarRetiro(BigDecimal monto, Long numeroCuentaOrigenId) {
+        log.info("Iniciando retiro de {} en cuenta {}", monto, numeroCuentaOrigenId);
         validarMonto(monto);
         Cuenta cuenta = obtenerCuentaValida(numeroCuentaOrigenId);
         validarSaldo(monto, cuenta.getSaldo());
@@ -102,6 +108,7 @@ public class TransaccionService {
 
     @Transactional
     public void realizarTransferencia(BigDecimal monto, Long numeroCuentaOrigenId, Long numeroCuentaDestinoId) {
+        log.info("Iniciando transferencia de {} desde cuenta {} hacia cuenta {}", monto, numeroCuentaOrigenId, numeroCuentaDestinoId);
         //Cuentas
         Cuenta cuentaOrigen = obtenerCuentaValida(numeroCuentaOrigenId);
         Cuenta cuentaDestino = obtenerCuentaValida(numeroCuentaDestinoId);

@@ -4,6 +4,7 @@ import com.springbank.dto.Request.UsuarioRequestDTO;
 import com.springbank.dto.Response.UsuarioResponseDTO;
 import com.springbank.entity.Cliente;
 import com.springbank.entity.Usuario;
+import com.springbank.exception.ClienteNoEncontrado;
 import com.springbank.exception.UsernameNoEncontradoException;
 import com.springbank.exception.UsuarioException;
 import com.springbank.repository.ClienteRepository;
@@ -29,28 +30,26 @@ public class UsuarioService {
     @Transactional
     public Usuario crearUsuario(UsuarioRequestDTO asignarUsuarioDTO) {
         Cliente cliente = clienteRepository.findById(asignarUsuarioDTO.getClienteId())
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con id: " + asignarUsuarioDTO.getClienteId()));
+                .orElseThrow(() -> new ClienteNoEncontrado("Cliente no encontrado con id: " + asignarUsuarioDTO.getClienteId()));
+
+        if (cliente.getUsuario() != null) {
+            throw new UsuarioException("Este cliente ya tiene un usuario asignado.");
+        }
 
         String passwordEncriptado = passwordEncoder.encode(asignarUsuarioDTO.getPassword());
 
-        
         Usuario usuario = new Usuario(asignarUsuarioDTO.getUsername(),
                 passwordEncriptado,
                 cliente);
         usuario.setRol(asignarUsuarioDTO.getRol());
-        if (cliente.getUsuario() != null) {
-            throw new RuntimeException("Este cliente ya tiene un usuario asignado.");
-        }
         cliente.setUsuario(usuario);
 
         return usuarioRepository.save(usuario);
     }
 
     public Usuario buscarPorUsername(String username) {
-        Usuario user = (Usuario) usuarioRepository.findByUsername(username)
+        return (Usuario) usuarioRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNoEncontradoException("No se encontró un usuario con el username: " + username));
-        UsuarioResponseDTO userResponse = new UsuarioResponseDTO(user.getId(), user.getUsername(), user.getRol(), user.getCliente().getId());
-        return user;
     }
 
     public UsuarioResponseDTO buscarPorUsernameDTO(String username) {

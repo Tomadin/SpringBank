@@ -14,6 +14,7 @@ import com.springbank.exception.CuentaNoEncontrada;
 import com.springbank.exception.TipoCuentaException;
 import com.springbank.repository.ClienteRepository;
 import com.springbank.repository.CuentaRepository;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,16 +83,27 @@ public class CuentaService {
         return saldoResponseDTO;
     }
 
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
     private Long generarNumeroCuentaUnico(Cliente cliente) {
         long base = cliente.getId() * 1_000_000L;
-        long sufijo = generarNumeroAleatorio(6); // 6 dígitos
-        return base + sufijo;
+        Long numeroCuenta;
+        int intentos = 0;
+        do {
+            long sufijo = generarNumeroAleatorio(6);
+            numeroCuenta = base + sufijo;
+            intentos++;
+            if (intentos > 10) {
+                throw new CuentaInvalida("No se pudo generar un número de cuenta único después de varios intentos.");
+            }
+        } while (cuentaRepository.numeroCuenta(numeroCuenta) != null);
+        return numeroCuenta;
     }
 
     private long generarNumeroAleatorio(int digitos) {
         long min = (long) Math.pow(10, digitos - 1);
         long max = (long) Math.pow(10, digitos) - 1;
-        return min + (long) (Math.random() * (max - min + 1));
+        return min + (long) (SECURE_RANDOM.nextDouble() * (max - min + 1));
     }
 
     public List<TransaccionResponseDTO> obtenerTransaccionesPorNumeroCuenta(Long numeroCuenta) { //llamar al service de transferencias y traer las que coincidan con el numeroCuenta 

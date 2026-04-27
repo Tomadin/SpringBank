@@ -2,7 +2,7 @@
 package com.springbank.exception;
 
 
-public class DniInvalido extends Exception{
+public class DniInvalido extends RuntimeException {
 
     
     public DniInvalido() {

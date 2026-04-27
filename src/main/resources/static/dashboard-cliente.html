@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Inicio — SpringBank</title>
+<link rel="stylesheet" href="/css/styles.css"/>
+<style>
+  .dash-wrap   { max-width: 1060px; margin: 0 auto; padding: 40px 24px 80px; }
+  .welcome     { margin-bottom: 44px; }
+  .greet       { font-family: var(--font-d); font-size: 2.6rem; font-weight: 700; color: var(--green-900); line-height: 1.08; margin-bottom: 4px; }
+  .greet-sub   { color: var(--muted); font-size: .9375rem; }
+  .sec-row     { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .accts-grid  { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; margin-bottom: 48px; }
+  .skel-acct   { height: 200px; border-radius: var(--r-xl); background: var(--skel-bg, #e6ebe6); animation: skelPulse 1.4s ease-in-out infinite; }
+  @keyframes skelPulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+  .skel-row    { height: 44px; border-radius: var(--r-md); background: var(--skel-bg, #e6ebe6); margin-bottom: 10px; animation: skelPulse 1.4s ease-in-out infinite; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="/dashboard">
+      <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+        <rect width="30" height="30" rx="8" fill="var(--green-900)"/>
+        <path d="M15 4L5 9.5H25L15 4Z" fill="#52B788"/>
+        <rect x="7" y="12" width="3" height="8" rx=".5" fill="white" opacity=".65"/>
+        <rect x="12" y="12" width="3" height="8" rx=".5" fill="white" opacity=".65"/>
+        <rect x="17" y="12" width="3" height="8" rx=".5" fill="white" opacity=".65"/>
+        <rect x="22" y="12" width="3" height="8" rx=".5" fill="white" opacity=".65"/>
+        <rect x="5" y="22" width="20" height="2" rx=".5" fill="#52B788"/>
+      </svg>
+      SpringBank
+    </a>
+    <div class="nav-actions">
+      <a href="/perfil" id="navNombre" style="color:var(--muted);font-size:.875rem;margin-right:4px;text-decoration:none"></a>
+      <a href="/perfil" class="avatar" id="navAvatar" title="Mi perfil" style="text-decoration:none"></a>
+      <button class="btn btn--ghost btn--sm" id="logoutBtn">Salir</button>
+    </div>
+  </div>
+</nav>
+
+<main class="dash-wrap">
+
+  <div class="welcome fade-up">
+    <div class="greet">Hola, <span id="welcomeName">…</span></div>
+    <div class="greet-sub" id="welcomeDate"></div>
+  </div>
+
+  <!-- CUENTAS -->
+  <section class="fade-up" style="animation-delay:60ms" id="cuentasSection">
+    <div class="sec-row">
+      <div class="sec-title">Tus cuentas</div>
+      <a href="/nueva-cuenta" class="btn btn--outline btn--sm" id="btnNueva" style="display:none">+ Nueva cuenta</a>
+    </div>
+
+    <div class="accts-grid" id="acctSkel">
+      <div class="skel-acct"></div>
+      <div class="skel-acct" style="animation-delay:.15s"></div>
+    </div>
+
+    <div class="accts-grid" id="acctGrid" style="display:none"></div>
+
+    <div class="empty" id="acctEmpty" style="display:none">
+      <div class="empty-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>
+        </svg>
+      </div>
+      <div class="empty-title">Todavía no tenés cuentas</div>
+      <div class="empty-sub">Abrí tu primera cuenta bancaria en segundos.</div>
+      <a href="/nueva-cuenta" class="btn btn--primary" style="margin-top:6px">Abrir primera cuenta</a>
+    </div>
+  </section>
+
+  <!-- ÚLTIMOS MOVIMIENTOS -->
+  <section class="fade-up" style="animation-delay:120ms" id="movSection">
+    <div class="sec-row">
+      <div class="sec-title">Últimos movimientos</div>
+    </div>
+
+    <div id="txSkel">
+      <div class="skel-row"></div>
+      <div class="skel-row" style="animation-delay:.1s"></div>
+      <div class="skel-row" style="animation-delay:.2s"></div>
+      <div class="skel-row" style="animation-delay:.3s"></div>
+    </div>
+
+    <div class="tbl-wrap" id="txWrap" style="display:none">
+      <table class="tbl">
+        <thead><tr><th>Fecha</th><th>Tipo</th><th>Cuenta</th><th style="text-align:right">Monto</th></tr></thead>
+        <tbody id="txBody"></tbody>
+      </table>
+    </div>
+
+    <div class="empty" id="txEmpty" style="display:none">
+      <div class="empty-icon">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 2v20M2 12h20"/>
+        </svg>
+      </div>
+      <div class="empty-title">Sin movimientos aún</div>
+      <div class="empty-sub">Realizá un depósito para comenzar a ver tu historial.</div>
+    </div>
+  </section>
+
+</main>
+
+<script type="module">
+import { api, toast, fmtMoney, fmtDate, requireRole, getClienteId, getNombre } from '/js/api.js';
+import { logout } from '/js/auth.js';
+
+requireRole('CLIENTE');
+
+const nombre = getNombre() ?? '';
+const primerNombre = nombre.split(' ')[0] || nombre;
+document.getElementById('welcomeName').textContent = primerNombre;
+document.getElementById('navNombre').textContent = nombre;
+document.getElementById('navAvatar').textContent =
+  nombre.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase() || '?';
+document.getElementById('welcomeDate').textContent = new Date().toLocaleDateString('es-AR', {
+  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+});
+document.getElementById('logoutBtn').addEventListener('click', logout);
+
+async function load() {
+  const clienteId = getClienteId();
+  const cliente = await api(`/clientes/${clienteId}`);
+  const cuentasId = cliente.cuentasId ?? [];
+
+  document.getElementById('acctSkel').style.display = 'none';
+
+  if (cuentasId.length === 0) {
+    document.getElementById('acctEmpty').style.display = 'flex';
+    document.getElementById('txSkel').style.display = 'none';
+    document.getElementById('txEmpty').style.display = 'flex';
+    return;
+  }
+
+  if (cuentasId.length < 2) {
+    document.getElementById('btnNueva').style.display = 'inline-flex';
+  }
+
+  document.getElementById('acctGrid').style.display = 'grid';
+
+  const cuentas = await Promise.all(cuentasId.map(n => api(`/cuentas/${n}/saldo`)));
+  const grid = document.getElementById('acctGrid');
+
+  cuentas.forEach(c => {
+    const corriente = (c.tipoCuenta ?? '') === 'CORRIENTE';
+    grid.insertAdjacentHTML('beforeend', `
+      <div class="acct-card${corriente ? ' acct-card--corriente' : ''}">
+        <div class="acct-tag">
+          <span class="badge ${corriente ? 'badge-corriente' : 'badge-ahorro'}">${c.tipoCuenta ?? 'AHORRO'}</span>
+        </div>
+        <div class="acct-num">${c.numeroCuenta}</div>
+        <div class="acct-bal">${fmtMoney(c.saldo)}</div>
+        <div class="acct-actions">
+          <a href="/movimientos?cuenta=${c.numeroCuenta}" class="acct-btn">Ver movimientos</a>
+          <a href="/transacciones?cuenta=${c.numeroCuenta}" class="acct-btn" style="background:var(--green-900);color:#fff">Operar</a>
+        </div>
+      </div>
+    `);
+  });
+
+  // Últimas transacciones
+  document.getElementById('txSkel').style.display = 'none';
+  const allArrays = await Promise.all(cuentasId.map(n => api(`/cuentas/${n}/transacciones`)));
+  const all = allArrays.flat().sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).slice(0, 5);
+
+  if (all.length === 0) {
+    document.getElementById('txEmpty').style.display = 'flex';
+    return;
+  }
+
+  document.getElementById('txWrap').style.display = 'block';
+  const body = document.getElementById('txBody');
+
+  all.forEach(tx => {
+    const esEntrada = tx.tipo === 'DEPOSITO' ||
+      (tx.tipo === 'TRANSFERENCIA' && cuentasId.includes(Number(tx.numeroCuentaDestino)) &&
+       !cuentasId.includes(Number(tx.numeroCuentaOrigen)));
+
+    const cuentaRef = tx.tipo === 'TRANSFERENCIA'
+      ? (esEntrada ? `De ${tx.numeroCuentaOrigen}` : `A ${tx.numeroCuentaDestino}`)
+      : (tx.numeroCuentaDestino ?? tx.numeroCuentaOrigen ?? '—');
+
+    body.insertAdjacentHTML('beforeend', `
+      <tr>
+        <td>${fmtDate(tx.fecha)}</td>
+        <td><span class="badge badge-${(tx.tipo ?? '').toLowerCase()}">${tx.tipo}</span></td>
+        <td style="color:var(--muted);font-size:.875rem">${cuentaRef}</td>
+        <td style="text-align:right" class="${esEntrada ? 'amt-pos' : 'amt-neg'}">
+          ${esEntrada ? '+' : '−'}${fmtMoney(Math.abs(tx.monto))}
+        </td>
+      </tr>
+    `);
+  });
+}
+
+load().catch(err => {
+  document.getElementById('acctSkel').style.display = 'none';
+  document.getElementById('txSkel').style.display = 'none';
+  toast(err.message ?? 'Error al cargar los datos.', 'error');
+});
+</script>
+</body>
+</html>

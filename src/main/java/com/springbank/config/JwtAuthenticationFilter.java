@@ -15,7 +15,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,8 +26,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter { //cada vez que se realice una peticion se ejecutara este filtro.
 
-    @Value("${jwt.secret}")
-    private static String SECRET_KEY;
     private final JwtService jwtService;
     private final TokenRepository tokenRepository;
     private final UsuarioRepository usuarioRepository;

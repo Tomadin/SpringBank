@@ -4,12 +4,14 @@ package com.springbank.dto.Request;
 import com.springbank.enums.RolUsuario;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 
 public class UsuarioRequestDTO { //utilizar @Valid en el controlador para validad los campos @NotBlank y @NotNull
     @NotBlank
     final private String username;
     @NotBlank
+    @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres.")
     final private String password;
     @NotNull
     final private RolUsuario rol;

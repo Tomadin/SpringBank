@@ -11,19 +11,21 @@ import com.springbank.entity.Token;
 import com.springbank.entity.Usuario;
 import com.springbank.enums.RolUsuario;
 import com.springbank.enums.TokenTipoEnum;
-import com.springbank.exception.DniInvalido;
-import com.springbank.exception.EmailInvalido;
 import com.springbank.exception.TokenInvalidoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.springbank.repository.TokenRepository;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthService {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
     @Autowired
     private UsuarioService usuarioService;
@@ -44,7 +46,7 @@ public class AuthService {
         return new TokenResponseDTO(tokenJwt, refreshToken);
     }
     
-    public TokenResponseDTO registrarClienteUsuario(UsuarioClienteRequestDTO request) throws DniInvalido, EmailInvalido{
+    public TokenResponseDTO registrarClienteUsuario(UsuarioClienteRequestDTO request) {
         //Creamos el Cliente
         ClienteRequestDTO clienteRequestDTO = new ClienteRequestDTO(request.getNombre(),
                 request.getApellido(), request.getEmail(), request.getDni());
@@ -63,6 +65,7 @@ public class AuthService {
     
     
     public TokenResponseDTO login(LoginRequestDTO request) {
+        log.info("Intento de login para usuario: {}", request.getUsername());
         authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -99,7 +102,8 @@ public class AuthService {
         revokeAllUserTokens(user);             // marcamos todos los tokens como expirados o revocados
         saveUserToken(user, accessToken);   // guardamos el nuevo token
 
-        return new TokenResponseDTO(accessToken, refreshToken); //usamos el mismo refresh token
+        final String newRefreshToken = jwtService.generarRefreshToken(user);
+        return new TokenResponseDTO(accessToken, newRefreshToken);
     }
 
     @Transactional
@@ -110,7 +114,7 @@ public class AuthService {
 
     @Transactional
     private void revokeAllUserTokens(Usuario user) {
-        final List<Token> validUserTokens = tokenRepository.findValidOrNotRevokedTokensByUserId(user.getId());
+        final List<Token> validUserTokens = tokenRepository.findValidTokensByUserId(user.getId());
         if (!validUserTokens.isEmpty()) {
             for (Token token : validUserTokens) {
                 token.setExpired(true);

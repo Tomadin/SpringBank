@@ -2,6 +2,7 @@ package com.springbank.controller;
 
 import com.springbank.dto.Request.TransaccionRequestDTO;
 import com.springbank.enums.TipoTransaccion;
+import jakarta.validation.Valid;
 import com.springbank.exception.TransaccionException;
 import com.springbank.service.TransaccionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,9 +34,15 @@ public class TransaccionController {
     })
     @PreAuthorize("hasRole('CLIENTE')")
     @PostMapping("/depositar")
-    public ResponseEntity<String> depositar(@RequestBody TransaccionRequestDTO transaccionRequestDTO) {
+    public ResponseEntity<String> depositar(@Valid @RequestBody TransaccionRequestDTO transaccionRequestDTO, Authentication authentication) {
         if (!transaccionRequestDTO.getTipo().equals(TipoTransaccion.DEPOSITO)) {
             throw new TransaccionException("Ingreso una transaccion de tipo " + transaccionRequestDTO.getTipo() + " en un deposito.");
+        }
+
+        String username = authentication.getName();
+        if (!transaccionService.perteneceCuentaAUsuario(transaccionRequestDTO.getNumeroCuentaDestino(), username)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("No tienes permiso para operar con esta cuenta.");
         }
 
         transaccionService.realizarDeposito(transaccionRequestDTO.getMonto(), transaccionRequestDTO.getNumeroCuentaDestino());
@@ -52,7 +59,7 @@ public class TransaccionController {
     })
     @PreAuthorize("hasRole('CLIENTE')")
     @PostMapping("/retirar")
-    public ResponseEntity<String> retirar(@RequestBody TransaccionRequestDTO transaccionRequestDTO, Authentication authentication) {
+    public ResponseEntity<String> retirar(@Valid @RequestBody TransaccionRequestDTO transaccionRequestDTO, Authentication authentication) {
         if (!transaccionRequestDTO.getTipo().equals(TipoTransaccion.RETIRO)) {
             throw new TransaccionException("Ingreso una transaccion de tipo " + transaccionRequestDTO.getTipo() + " en un retiro.");
         }
@@ -77,7 +84,7 @@ public class TransaccionController {
     })
     @PreAuthorize("hasRole('CLIENTE')")
     @PostMapping("/transferir") //Testear el funcionamiento
-    public ResponseEntity<String> transferir(@RequestBody TransaccionRequestDTO transaccionRequestDTO, Authentication authentication) {
+    public ResponseEntity<String> transferir(@Valid @RequestBody TransaccionRequestDTO transaccionRequestDTO, Authentication authentication) {
         if (!transaccionRequestDTO.getTipo().equals(TipoTransaccion.TRANSFERENCIA)) {
             throw new TransaccionException("Ingreso una transaccion de tipo " + transaccionRequestDTO.getTipo() + " en una transferencia.");
         }

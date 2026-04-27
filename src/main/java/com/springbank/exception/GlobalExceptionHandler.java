@@ -1,14 +1,25 @@
 package com.springbank.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorDTO> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        String mensaje = ex.getBindingResult().getFieldErrors().stream()
+                .map(FieldError::getDefaultMessage)
+                .collect(Collectors.joining(", "));
+        return buildErrorResponse("P_400", new RuntimeException(mensaje), request, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(value = RuntimeException.class)
     public ResponseEntity<ErrorDTO> runtimeExceptionHandler(RuntimeException ex, HttpServletRequest request) {
@@ -38,7 +49,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = DniInvalido.class)
     public ResponseEntity<ErrorDTO> dniInvalidoExceptionHandler(DniInvalido ex, HttpServletRequest request) {
-        return buildErrorResponse("P_500", ex, request, HttpStatus.INTERNAL_SERVER_ERROR);
+        return buildErrorResponse("P_400", ex, request, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = EmailInvalido.class)

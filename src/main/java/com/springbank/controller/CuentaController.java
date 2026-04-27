@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,7 +46,7 @@ public class CuentaController {
     })
     @PreAuthorize("hasRole('ADMIN') or hasRole('CLIENTE')")
     @PostMapping
-    public ResponseEntity<?> crearCuenta(@RequestBody CuentaRequestDTO cuentaRequestDTO, Authentication authentication) {
+    public ResponseEntity<?> crearCuenta(@Valid @RequestBody CuentaRequestDTO cuentaRequestDTO, Authentication authentication) {
 
         boolean esAdmin = authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
@@ -86,10 +87,8 @@ public class CuentaController {
         if (!cuentaService.esPropietarioOAdmin(cuentaResponse.getCliente(), username, esAdmin)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para ver el saldo de esta cuenta.");
         }
-        //Si pasa la validación, obtener el saldo para la respuesta.
-        SaldoResponseDTO saldoResponseDTO = cuentaService.obtenerSaldo(numeroCuenta);
-
-        return ResponseEntity.ok(saldoResponseDTO);
+        // Devuelve el CuentaResponseDTO completo (incluye tipoCuenta, saldo, numeroCuenta)
+        return ResponseEntity.ok(cuentaResponse);
     }
     
     @Operation(summary = "Ver transacciones de una Cuenta", description = "Ver las transacciones de una cuenta, a traves de su numeroCuenta. Un Cliente solo puede ver sus transacciones y un admin las de cualquier cliente.")

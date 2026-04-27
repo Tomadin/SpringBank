@@ -3,19 +3,20 @@ package com.springbank.dto.Request;
 
 import com.springbank.enums.TipoTransaccion;
 import jakarta.annotation.Nullable;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 
 public class TransaccionRequestDTO {
     @NotNull
+    @Positive
     final private BigDecimal monto;
-    @NotBlank
+    @NotNull
     final private TipoTransaccion tipo;
-    @NotBlank
+    @NotNull
     final private Long numeroCuentaOrigen;
-    @NotBlank
+    @NotNull
     final private Long numeroCuentaDestino;
     @Nullable
     final private String motivo;

@@ -6,8 +6,6 @@ import com.springbank.dto.Request.UsuarioClienteRequestDTO;
 import com.springbank.dto.Request.UsuarioRequestDTO;
 import com.springbank.dto.Response.TokenResponseDTO;
 import com.springbank.enums.RolUsuario;
-import com.springbank.exception.DniInvalido;
-import com.springbank.exception.EmailInvalido;
 import com.springbank.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -53,7 +52,7 @@ public class AuthController {
             content = @Content(schema = @Schema(implementation = UsuarioRequestDTO.class))
     )
     @PostMapping("/registrar-usuario")
-    public ResponseEntity<TokenResponseDTO> register(@RequestBody UsuarioRequestDTO request) { //crear atributos de TokenDTO, RegistroRequestDTO y el service de authService
+    public ResponseEntity<TokenResponseDTO> register(@Valid @RequestBody UsuarioRequestDTO request) { //crear atributos de TokenDTO, RegistroRequestDTO y el service de authService
         final TokenResponseDTO token = authService.registrar(request);
         return ResponseEntity.ok(token);
     }
@@ -73,7 +72,7 @@ public class AuthController {
             content = @Content(schema = @Schema(implementation = UsuarioClienteRequestDTO.class))
     )
     @PostMapping("/registrar-cliente-usuario")
-    public ResponseEntity<TokenResponseDTO> registerClientAndUser(@RequestBody UsuarioClienteRequestDTO request) throws DniInvalido, EmailInvalido { //crear atributos de TokenDTO, RegistroRequestDTO y el service de authService
+    public ResponseEntity<TokenResponseDTO> registerClientAndUser(@Valid @RequestBody UsuarioClienteRequestDTO request) { //crear atributos de TokenDTO, RegistroRequestDTO y el service de authService
         final TokenResponseDTO token = authService.registrarClienteUsuario(request);
         return ResponseEntity.ok(token);
     }
@@ -91,7 +90,7 @@ public class AuthController {
             content = @Content(schema = @Schema(implementation = LoginRequestDTO.class))
     )
     @PostMapping("/login")
-    public ResponseEntity<TokenResponseDTO> login(@RequestBody LoginRequestDTO request) {
+    public ResponseEntity<TokenResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
         final TokenResponseDTO token = authService.login(request);
         return ResponseEntity.ok(token);
     }

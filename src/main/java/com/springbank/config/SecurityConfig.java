@@ -14,7 +14,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -87,12 +86,24 @@ public class SecurityConfig {
                         "/api/test/**",
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
-                        "/swagger-ui.html"
+                        "/swagger-ui.html",
+                        "/", "/*.html",
+                        "/login", "/registro", "/dashboard", "/transacciones",
+                        "/movimientos", "/nueva-cuenta", "/perfil",
+                        "/dashboard-admin", "/admin-clientes", "/admin-transacciones",
+                        "/admin-cuentas", "/admin-usuarios",
+                        "/css/**", "/js/**", "/images/**", "/favicon.ico"
                 ).permitAll()
                         .anyRequest()
                         .authenticated()
                 )
-                .httpBasic(Customizer.withDefaults())
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(401);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\":\"No autenticado\"}");
+                        })
+                )
                 .sessionManagement(session -> session
                 .sessionCreationPolicy(STATELESS)
                 ).authenticationProvider(authenticationProvider())

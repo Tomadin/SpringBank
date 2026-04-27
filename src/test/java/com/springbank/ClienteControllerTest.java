@@ -108,7 +108,7 @@ public class ClienteControllerTest {
         UsuarioResponseDTO usuario = new UsuarioResponseDTO(1L, "admin", RolUsuario.ADMIN, 1L);
 
         List<Long> cuentas = List.of(1001L, 1002L);
-        ClienteResponseDTO response = new ClienteResponseDTO(1L, "Juan", "perez", usuario, cuentas);
+        ClienteResponseDTO response = new ClienteResponseDTO(1L, "Juan", "perez", null, null, usuario, cuentas);
 
         when(clienteService.obtenerClientePorId(1L)).thenReturn(response);
 
@@ -123,7 +123,7 @@ public class ClienteControllerTest {
         UsuarioResponseDTO usuario = new UsuarioResponseDTO(1L, "juan123", RolUsuario.CLIENTE, 2L);
 
         List<Long> cuentas = List.of(1001L, 1002L);
-        ClienteResponseDTO response = new ClienteResponseDTO(2L, "Juan", "Perez", usuario, cuentas);
+        ClienteResponseDTO response = new ClienteResponseDTO(2L, "Juan", "Perez", null, null, usuario, cuentas);
 
         when(clienteService.obtenerClientePorId(2L)).thenReturn(response);
 
@@ -138,7 +138,7 @@ public class ClienteControllerTest {
         UsuarioResponseDTO usuario = new UsuarioResponseDTO(1L, "juan123", RolUsuario.CLIENTE, 2L);
 
         List<Long> cuentas = List.of(1001L, 1002L);
-        ClienteResponseDTO response = new ClienteResponseDTO(2L, "Juan", "Perez", usuario, cuentas);
+        ClienteResponseDTO response = new ClienteResponseDTO(2L, "Juan", "Perez", null, null, usuario, cuentas);
 
         when(clienteService.obtenerClientePorId(2L)).thenReturn(response);
 
@@ -152,11 +152,11 @@ public class ClienteControllerTest {
     void traerTodos_Admin_RetornaListaClientes() throws Exception {
         UsuarioResponseDTO usuario1 = new UsuarioResponseDTO(1L, "juan123", RolUsuario.ADMIN, 2L);
         List<Long> cuentas1 = List.of(1001L, 1002L);
-        ClienteResponseDTO cliente1 = new ClienteResponseDTO(1L, "Juan", "Perez", usuario1, cuentas1);
+        ClienteResponseDTO cliente1 = new ClienteResponseDTO(1L, "Juan", "Perez", null, null, usuario1, cuentas1);
 
         UsuarioResponseDTO usuario2 = new UsuarioResponseDTO(2L, "ana123", RolUsuario.ADMIN, 3L);
         List<Long> cuentas2 = List.of(1003L, 1004L);
-        ClienteResponseDTO cliente2 = new ClienteResponseDTO(3L, "Ana", "Martinez", usuario2, cuentas2);
+        ClienteResponseDTO cliente2 = new ClienteResponseDTO(3L, "Ana", "Martinez", null, null, usuario2, cuentas2);
 
         List<ClienteResponseDTO> clientes = List.of(cliente1, cliente2);
 
